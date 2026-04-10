@@ -1,9 +1,9 @@
 # PlatformIO build artifacts and downloaded libraries
-MorrayServer/.pio/
+MorayServer/.pio/
 
 # Node.js dependencies
-MorrayClient/node_modules/
-MorrayClient/test-server/node_modules/
+MorayClient/node_modules/
+MorayClient/test-server/node_modules/
 
 # Claude Code local settings (tool permissions, per-machine config)
 .claude/

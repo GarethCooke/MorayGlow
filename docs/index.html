@@ -546,7 +546,7 @@ footer .material-icons { font-size: 16px; }
       <div class="ble-steps">
         <div class="ble-step">
           <div class="ble-step-n">1</div>
-          <div class="ble-step-text"><strong>Boot:</strong> <code>EEPROM.begin(512)</code> → read <code>WiFiConfig</code> → <code>WiFi.mode(WIFI_STA)</code> → <code>Device::init()</code> derives MAC-based ID (e.g. <code>morrayglow-2cb120</code>)</div>
+          <div class="ble-step-text"><strong>Boot:</strong> <code>EEPROM.begin(512)</code> → read <code>WiFiConfig</code> → <code>WiFi.mode(WIFI_STA)</code> → <code>Device::init()</code> derives MAC-based ID (e.g. <code>morayglow-2cb120</code>)</div>
         </div>
         <div class="ble-step">
           <div class="ble-step-n">2</div>
@@ -562,7 +562,7 @@ footer .material-icons { font-size: 16px; }
         </div>
         <div class="ble-step">
           <div class="ble-step-n">5</div>
-          <div class="ble-step-text"><strong>AP fallback:</strong> no credentials / failed → <code>WiFi.mode(WIFI_AP)</code> → SSID <code>MorrayGlow-XXXXXX</code> · IP <code>10.0.0.1</code> → all HTTP redirected to captive portal <code>setup.html</code></div>
+          <div class="ble-step-text"><strong>AP fallback:</strong> no credentials / failed → <code>WiFi.mode(WIFI_AP)</code> → SSID <code>MorayGlow-XXXXXX</code> · IP <code>10.0.0.1</code> → all HTTP redirected to captive portal <code>setup.html</code></div>
         </div>
         <div class="ble-step">
           <div class="ble-step-n">6</div>
@@ -853,7 +853,7 @@ footer .material-icons { font-size: 16px; }
             <tr><td><em>(internal)</em></td><td>Wi-Fi 2.4GHz radio</td><td>Bidirectional</td><td>Station mode (STA) for normal operation · AP mode (192.168.x.x → 10.0.0.1) for WiFi setup</td></tr>
             <tr><td><em>(internal)</em></td><td>LEDC PWM controller</td><td>Output</td><td>3 channels assigned to GPIO1–3. 1 kHz carrier, 8-bit duty cycle (0–255 = 0–100%)</td></tr>
             <tr><td><em>(internal)</em></td><td>EEPROM (emulated Flash)</td><td>R/W</td><td>512 bytes via <code>EEPROM.begin(512)</code>. Stores <code>WiFiConfig</code> struct (SSID + password, 1-byte alignment)</td></tr>
-            <tr><td><em>(internal)</em></td><td>LittleFS flash partition</td><td>R/W</td><td>Stores web UI files: <code>index.html</code>, <code>setup.html</code>, <code>devices.html</code>, <code>css/style.css</code>, <code>js/app.js</code>, <code>js/morray.js</code></td></tr>
+            <tr><td><em>(internal)</em></td><td>LittleFS flash partition</td><td>R/W</td><td>Stores web UI files: <code>index.html</code>, <code>setup.html</code>, <code>devices.html</code>, <code>css/style.css</code>, <code>js/app.js</code>, <code>js/moray.js</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -894,7 +894,7 @@ footer .material-icons { font-size: 16px; }
           <div class="step-num">1</div>
           <div class="step-body">
             <h3>Configure MQTT broker</h3>
-            <p>Edit <code>MorrayServer/include/config.h</code> and set your broker IP and optional credentials before building.</p>
+            <p>Edit <code>MorayServer/include/config.h</code> and set your broker IP and optional credentials before building.</p>
             <div class="code-block">
               <div class="code-header"><span>config.h</span><span class="material-icons">content_copy</span></div>
               <pre><code>#define MQTT_HOST     "192.168.1.10"   // your broker IP
@@ -922,7 +922,7 @@ footer .material-icons { font-size: 16px; }
           <div class="step-num">3</div>
           <div class="step-body">
             <h3>Upload web UI to LittleFS</h3>
-            <p>Files in <code>MorrayServer/data/</code> are served by the ESP32. Upload them after any UI change.</p>
+            <p>Files in <code>MorayServer/data/</code> are served by the ESP32. Upload them after any UI change.</p>
             <div class="code-block">
               <div class="code-header"><span>powershell</span><span class="material-icons">content_copy</span></div>
               <pre><code>& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -e xiao_esp32s3 -t uploadfs</code></pre>
@@ -933,7 +933,7 @@ footer .material-icons { font-size: 16px; }
           <div class="step-num">4</div>
           <div class="step-body">
             <h3>Connect to device &amp; configure Wi-Fi</h3>
-            <p>On first boot the device starts AP <code>MorrayGlow-XXXXXX</code>. Connect from a phone or laptop, visit <code>http://10.0.0.1</code>, select your network and enter the password. The device restarts into station mode.</p>
+            <p>On first boot the device starts AP <code>MorayGlow-XXXXXX</code>. Connect from a phone or laptop, visit <code>http://10.0.0.1</code>, select your network and enter the password. The device restarts into station mode.</p>
           </div>
         </div>
         <div class="step">
@@ -944,10 +944,10 @@ footer .material-icons { font-size: 16px; }
             <div class="code-block">
               <div class="code-header"><span>powershell</span><span class="material-icons">content_copy</span></div>
               <pre><code># Firmware OTA (replace with your device hostname or IP)
-& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -e xiao_esp32s3_ota -t upload --upload-port morrayglow-2cb120.local
+& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -e xiao_esp32s3_ota -t upload --upload-port morayglow-2cb120.local
 
 # LittleFS OTA
-& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -e xiao_esp32s3_ota -t uploadfs --upload-port morrayglow-2cb120.local</code></pre>
+& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -e xiao_esp32s3_ota -t uploadfs --upload-port morayglow-2cb120.local</code></pre>
             </div>
           </div>
         </div>
@@ -972,15 +972,15 @@ footer .material-icons { font-size: 16px; }
       <p>A Node.js mock server mirrors the firmware REST and WebSocket API so the web UI can be developed without flashing hardware.</p>
       <div class="code-block">
         <div class="code-header"><span>bash</span><span class="material-icons">content_copy</span></div>
-        <pre><code>cd MorrayClient/test-server
+        <pre><code>cd MorayClient/test-server
 npm install        # first time only
 npm start          # → http://localhost:3000
 
 # Run Jest tests
-cd MorrayClient
-npm test           # tests morray.js + app.js
+cd MorayClient
+npm test           # tests moray.js + app.js
 
-cd MorrayClient/test-server
+cd MorayClient/test-server
 npm test           # tests logic.js + server.js</code></pre>
       </div>
     </section>
@@ -1007,7 +1007,7 @@ npm test           # tests logic.js + server.js</code></pre>
             <tr><td>POST</td><td>/api/color</td><td><code>{"color":"#rrggbb"}</code></td><td>State JSON — also sets <code>cycleMode=false</code></td></tr>
             <tr><td>POST</td><td>/api/mode</td><td><code>{"cycle":bool}</code></td><td>State JSON</td></tr>
             <tr><td>GET</td><td>/api/devices</td><td>—</td><td><code>{"devices":[{"id","ip","url"},…]}</code> — mDNS query, ~2 s. Station mode only.</td></tr>
-            <tr><td>GET</td><td>/api/deviceinfo</td><td>—</td><td><code>{"id":"morrayglow-2cb120","url":"http://…"}</code> — available in both STA and AP modes</td></tr>
+            <tr><td>GET</td><td>/api/deviceinfo</td><td>—</td><td><code>{"id":"morayglow-2cb120","url":"http://…"}</code> — available in both STA and AP modes</td></tr>
             <tr><td>GET</td><td>/api/networkdata</td><td>—</td><td><code>{"scanning":bool,"networks":[{"ssid","rssi","secure"},…]}</code> — async WiFi scan, deduplicated by SSID</td></tr>
             <tr><td>POST</td><td>/api/networkset</td><td><code>{"ssid":"…","password":"…"}</code></td><td><code>{"ok":true}</code> then device reboots into station mode</td></tr>
           </tbody>
@@ -1027,7 +1027,7 @@ npm test           # tests logic.js + server.js</code></pre>
       </div>
 
       <h3>MQTT Topics</h3>
-      <p>Topics are prefixed with the runtime device ID (e.g. <code>morrayglow-2cb120</code>). The MQTT command schema follows the Home Assistant JSON light schema — note it differs from the REST API format.</p>
+      <p>Topics are prefixed with the runtime device ID (e.g. <code>morayglow-2cb120</code>). The MQTT command schema follows the Home Assistant JSON light schema — note it differs from the REST API format.</p>
       <div class="table-wrap">
         <table>
           <thead>
@@ -1062,7 +1062,7 @@ npm test           # tests logic.js + server.js</code></pre>
       <div class="code-block">
         <div class="code-header"><span>text</span><span class="material-icons">content_copy</span></div>
         <pre><code>MorayGlow/
-├── MorrayServer/                    # ESP32-S3 firmware (PlatformIO)
+├── MorayServer/                    # ESP32-S3 firmware (PlatformIO)
 │   ├── platformio.ini               # envs: xiao_esp32s3, xiao_esp32s3_ota, native
 │   ├── src/
 │   │   ├── main.cpp                 # setup/loop, LED PWM, button, colour cycle, WiFi/mDNS/OTA init
@@ -1082,18 +1082,18 @@ npm test           # tests logic.js + server.js</code></pre>
 │   │   ├── css/style.css            # Shared UI styles
 │   │   └── js/
 │   │       ├── app.js               # Main UI logic: WebSocket, REST calls, colour picker
-│   │       └── morray.js            # UMD utility module: buildWsUrl, isValidHexColor
+│   │       └── moray.js            # UMD utility module: buildWsUrl, isValidHexColor
 │   └── test/                        # Native unit tests (Unity framework)
 │       └── test_state/
 │           └── test_main.cpp        # Tests for stateToJson, rgbToHex, parseMqttCommand
-├── MorrayClient/                    # Node.js dev tools
+├── MorayClient/                    # Node.js dev tools
 │   ├── js/
-│   │   └── morray.js                # Shared UMD module (same file served from LittleFS)
+│   │   └── moray.js                # Shared UMD module (same file served from LittleFS)
 │   ├── test-server/
 │   │   ├── server.js                # Express mock server: mirrors firmware REST + WebSocket API
 │   │   ├── logic.js                 # Stateless validation logic mirroring state.h in JS
 │   │   └── package.json             # express, ws, jest
-│   └── package.json                 # jest for morray.js + app.js tests
+│   └── package.json                 # jest for moray.js + app.js tests
 └── docs/
     ├── index.html                   # This documentation page
     └── KiCad/                       # PCB schematic and layout (KiCad 7)</code></pre>

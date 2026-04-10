@@ -1,16 +1,16 @@
-# MorrayGlow
+# MorayGlow
 
 IoT LED strip controller — ESP32 firmware + web UI with Home Assistant integration.
 
 ## Project Summary
 
-MorrayGlow controls an RGB LED strip via an **ESP32**. The device hosts a web UI and exposes a REST + WebSocket API. A browser-based client lets you toggle the strip on/off and pick a colour. The device also integrates with **Home Assistant** via MQTT auto-discovery, so it appears automatically as a light entity.
+MorayGlow controls an RGB LED strip via an **ESP32**. The device hosts a web UI and exposes a REST + WebSocket API. A browser-based client lets you toggle the strip on/off and pick a colour. The device also integrates with **Home Assistant** via MQTT auto-discovery, so it appears automatically as a light entity.
 
 ## Project Structure
 
 ```text
 MorayGlow/
-├── MorrayServer/               # ESP32 firmware (C++, PlatformIO)
+├── MorayServer/               # ESP32 firmware (C++, PlatformIO)
 │   ├── platformio.ini
 │   ├── src/main.cpp            # WiFi, LittleFS, REST API, WebSocket
 │   ├── include/
@@ -19,14 +19,14 @@ MorayGlow/
 │   │   └── mqtt.h              # MQTT client + Home Assistant discovery
 │   └── test/
 │       └── test_state.cpp      # Unity tests (run on host, not device)
-└── MorrayClient/               # Web UI (plain HTML/CSS/JS — no framework)
+└── MorayClient/               # Web UI (plain HTML/CSS/JS — no framework)
     ├── index.html
     ├── css/style.css
     ├── js/
-    │   ├── morray.js           # UMD utility module (buildWsUrl, isValidHexColor)
+    │   ├── moray.js           # UMD utility module (buildWsUrl, isValidHexColor)
     │   └── app.js              # Main UI logic
     ├── test/
-    │   └── morray.test.js      # Jest tests for morray.js
+    │   └── moray.test.js      # Jest tests for moray.js
     └── test-server/            # Node.js mock server for UI development
         ├── server.js
         ├── logic.js            # Pure functions (testable without starting server)
@@ -56,30 +56,30 @@ MorayGlow/
 | MQTT           | `knolleary/PubSubClient` + `setBufferSize(512)` | Lightweight, well-maintained                            |
 | HA integration | MQTT auto-discovery                             | Device appears automatically in Home Assistant          |
 | Client         | Plain HTML/CSS/JS (no framework)                | Keeps LittleFS footprint small                          |
-| Client module  | UMD pattern (`morray.js`)                       | Works as browser global and Node.js/Jest module         |
+| Client module  | UMD pattern (`moray.js`)                       | Works as browser global and Node.js/Jest module         |
 | Testability    | Pure functions in `state.h` / `logic.js`        | Compiled and tested on host without hardware            |
 | C++ tests      | Unity (via PlatformIO native env)               | Bundled with PlatformIO; runs on host                   |
 | JS tests       | Jest                                            | Standard, zero-config for CommonJS modules              |
 
 ## Before Flashing
 
-Edit `MorrayServer/include/config.h` and set your WiFi SSID/password and MQTT broker IP before building and flashing.
+Edit `MorayServer/include/config.h` and set your WiFi SSID/password and MQTT broker IP before building and flashing.
 
 ## Running Tests
 
-### MorrayServer — C++ firmware (Unity via PlatformIO)
+### MorayServer — C++ firmware (Unity via PlatformIO)
 
 Requires `gcc`/`g++` on your PATH (install MinGW-w64 if not present).
 
 ```powershell
-cd MorrayServer
+cd MorayServer
 pio test -e native
 ```
 
-### MorrayClient — browser JS logic (Jest)
+### MorayClient — browser JS logic (Jest)
 
 ```powershell
-cd MorrayClient
+cd MorayClient
 npm install   # first time only
 npm test
 ```
@@ -87,7 +87,7 @@ npm test
 ### Test server — Node.js logic (Jest)
 
 ```powershell
-cd MorrayClient\test-server
+cd MorayClient\test-server
 npm install   # first time only
 npm test
 ```
@@ -99,11 +99,11 @@ npm test
 The test server lets you develop and test the web UI without the physical device.
 
 ```powershell
-cd MorrayClient\test-server
+cd MorayClient\test-server
 npm install   # first time only
 npm start
 ```
 
 Then open [http://localhost:3000](http://localhost:3000) in a browser.
 
-State is persisted to `MorrayClient\test-server\db.json` between restarts.
+State is persisted to `MorayClient\test-server\db.json` between restarts.

@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 MorayGlow is an IoT LED strip controller. It has two separate sub-projects:
 
-- **MorrayServer/** — ESP32-S3 firmware (C++, PlatformIO, Arduino framework) targeting the Seeed XIAO ESP32-S3
-- **MorrayClient/** — Web UI served from the device (vanilla HTML/CSS/JS) + a Node.js dev mock server
+- **MorayServer/** — ESP32-S3 firmware (C++, PlatformIO, Arduino framework) targeting the Seeed XIAO ESP32-S3
+- **MorayClient/** — Web UI served from the device (vanilla HTML/CSS/JS) + a Node.js dev mock server
 
 ## Build & Flash Commands (Firmware)
 
@@ -43,27 +43,27 @@ pio test -e native
 ### OTA Notes
 
 - OTA uses ArduinoOTA (password: `password`) via the `xiao_esp32s3_ota` PlatformIO environment.
-- The device hostname is `morrayglow-XXXXXX.local` (MAC-based, printed to serial on boot).
+- The device hostname is `morayglow-XXXXXX.local` (MAC-based, printed to serial on boot).
 - OTA requires the ESP32 to connect back to the host machine on an ephemeral port — Windows Firewall must allow inbound connections for `%USERPROFILE%\.platformio\penv\Scripts\python.exe`.
 - IoT network isolation (common on mesh routers) will block OTA. Use USB or temporarily move the device to the main network for flashing.
 
 ## Client Dev Server
 
 ```bash
-cd MorrayClient/test-server
+cd MorayClient/test-server
 npm install   # first time only
 npm start     # → http://localhost:3000  (mirrors firmware API exactly)
 ```
 
 Client JS tests (Jest):
 ```bash
-cd MorrayClient
+cd MorayClient
 npm test
 ```
 
 Test-server JS tests (Jest):
 ```bash
-cd MorrayClient/test-server
+cd MorayClient/test-server
 npm test
 ```
 
@@ -74,22 +74,22 @@ npm test
 ```
 Home Assistant
     ↕ MQTT (<device-id>/state, <device-id>/command)
-ESP32-S3 Firmware (MorrayServer)
+ESP32-S3 Firmware (MorayServer)
     ↕ REST + WebSocket (/api/state, /api/power, /api/color, /api/mode, /ws)
-Web Browser (MorrayClient)
+Web Browser (MorayClient)
 ```
 
 State changes from any source (REST, MQTT, WebSocket) call `applyLedState()` → `broadcastState()` → `mqttPublishState()`.
 
 ### Key Files
 
-- **[include/state.h](MorrayServer/include/state.h)** — Shared state logic: `stateToJson(on, color, cycle)`, `rgbToHex`, `parseMqttCommand(payload, outOn, outColor, outCycle)`. Header-only with `inline` functions so it compiles on native (for unit tests). Uses `#ifndef ARDUINO` guards.
-- **[include/config.h](MorrayServer/include/config.h)** — MQTT broker settings — **edit before flashing**.
-- **[include/device.h](MorrayServer/include/device.h)** — `Device` static class: `init()`, `id()` (MAC-based `morrayglow-XXXXXX`), `apSsid()`, `queryDevicesJson()`.
-- **[include/webserver.h](MorrayServer/include/webserver.h)** — Declarations: `broadcastState()`, `webserverSetup()`, `webserverLoop()`.
-- **[include/mqtt.h](MorrayServer/include/mqtt.h)** — Declarations: `mqttSetup()`, `mqttLoop()`, `mqttPublishState()`.
-- **[js/morray.js](MorrayClient/js/morray.js)** — UMD utility module (works in browser and Node.js): `buildWsUrl`, `isValidHexColor`.
-- **[test-server/logic.js](MorrayClient/test-server/logic.js)** — Server-side validation logic mirroring `state.h` in JavaScript.
+- **[include/state.h](MorayServer/include/state.h)** — Shared state logic: `stateToJson(on, color, cycle)`, `rgbToHex`, `parseMqttCommand(payload, outOn, outColor, outCycle)`. Header-only with `inline` functions so it compiles on native (for unit tests). Uses `#ifndef ARDUINO` guards.
+- **[include/config.h](MorayServer/include/config.h)** — MQTT broker settings — **edit before flashing**.
+- **[include/device.h](MorayServer/include/device.h)** — `Device` static class: `init()`, `id()` (MAC-based `morayglow-XXXXXX`), `apSsid()`, `queryDevicesJson()`.
+- **[include/webserver.h](MorayServer/include/webserver.h)** — Declarations: `broadcastState()`, `webserverSetup()`, `webserverLoop()`.
+- **[include/mqtt.h](MorayServer/include/mqtt.h)** — Declarations: `mqttSetup()`, `mqttLoop()`, `mqttPublishState()`.
+- **[js/moray.js](MorayClient/js/moray.js)** — UMD utility module (works in browser and Node.js): `buildWsUrl`, `isValidHexColor`.
+- **[test-server/logic.js](MorayClient/test-server/logic.js)** — Server-side validation logic mirroring `state.h` in JavaScript.
 
 ### Globals (main.cpp, extern'd into webserver.cpp and mqtt.cpp)
 
@@ -144,20 +144,20 @@ MQTT commands use Home Assistant JSON schema, which **differs from the REST API*
 
 HA auto-discovery is published to `homeassistant/light/<device-id>/config` on every MQTT reconnect.
 
-Topics use the runtime device ID (e.g., `morrayglow-2cb120/state`), not a hardcoded name.
+Topics use the runtime device ID (e.g., `morayglow-2cb120/state`), not a hardcoded name.
 
 ### Device Identity
 
-- Device ID: `morrayglow-XXXXXX` where XXXXXX = last 3 bytes of MAC address (lowercase hex)
-- AP SSID: `MorrayGlow-XXXXXX` (uppercase)
-- mDNS hostname: `morrayglow-XXXXXX.local`
+- Device ID: `morayglow-XXXXXX` where XXXXXX = last 3 bytes of MAC address (lowercase hex)
+- AP SSID: `MorayGlow-XXXXXX` (uppercase)
+- mDNS hostname: `morayglow-XXXXXX.local`
 - `Device::init()` must be called after `WiFi.mode()` (MAC is stable from that point)
 
 ### WiFi / AP Mode
 
 On first boot (no saved credentials) or after a factory reset, the device starts an access point:
 
-- SSID: `MorrayGlow-XXXXXX`
+- SSID: `MorayGlow-XXXXXX`
 - IP: `10.0.0.1`
 - Captive portal serves `setup.html` — all requests redirect there
 - After saving credentials the device restarts into station mode
@@ -169,7 +169,7 @@ The web UI (`data/` directory) is uploaded to LittleFS via `uploadfs`. Files ser
 - `index.html` — main control UI (power, mode toggle, colour picker, device list link)
 - `setup.html` — WiFi setup captive portal (network scan, SSID/password entry)
 - `devices.html` — multi-device discovery via mDNS
-- `css/style.css`, `js/app.js`, `js/morray.js`
+- `css/style.css`, `js/app.js`, `js/moray.js`
 
 No build step — edit files in `data/` directly and re-run `uploadfs`.
 

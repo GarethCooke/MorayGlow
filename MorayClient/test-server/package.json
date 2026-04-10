@@ -1,0 +1,17 @@
+{
+  "name": "morayglow-test-server",
+  "version": "1.0.0",
+  "description": "Dev mock server for MorayClient — mirrors MorayServer API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4",
+    "ws": "^8"
+  },
+  "devDependencies": {
+    "jest": "^29"
+  }
+}

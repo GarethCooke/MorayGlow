@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MorrayGlow — Devices</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .device-list { width: 100%; display: flex; flex-direction: column; gap: 0.4rem; }
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: #0c0c1a;
+            border: 1px solid #333;
+            text-decoration: none;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .device-item:hover { border-color: var(--on-color); }
+        .device-id   { font-size: 0.9rem; }
+        .device-ip   { font-size: 0.75rem; color: var(--muted); }
+        .device-arrow { color: var(--muted); font-size: 1.1rem; }
+        .back-link {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MorrayGlow</h1>
+        <p class="status">Devices on this network</p>
+
+        <div class="card">
+            <div id="device-list" class="device-list">
+                <p class="status">Scanning&hellip;</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">&#8592; Back to controls</a>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var listEl = document.getElementById('device-list');
+
+        fetch('/api/devices')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var devices = data.devices || [];
+                if (devices.length === 0) {
+                    listEl.innerHTML = '<p class="status">No devices found</p>';
+                    return;
+                }
+                listEl.innerHTML = '';
+                devices.forEach(function (d, idx) {
+                    var a = document.createElement('a');
+                    a.className = 'device-item';
+                    a.href = d.url;
+                    a.innerHTML =
+                        '<div>'
+                        + '<div class="device-id">' + d.id + (idx === 0 ? ' <span style="color:var(--on-color);font-size:0.7rem;">(this device)</span>' : '') + '</div>'
+                        + '<div class="device-ip">' + d.ip + '</div>'
+                        + '</div>'
+                        + '<span class="device-arrow">&#8250;</span>';
+                    listEl.appendChild(a);
+                });
+            })
+            .catch(function () {
+                listEl.innerHTML = '<p class="status">Scan failed &mdash; try refreshing</p>';
+            });
+    }());
+    </script>
+</body>
+</html>

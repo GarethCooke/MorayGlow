@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MorayGlow PCB — 3D Viewer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Outfit:wght@300;400;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111318; color: #e2e2e9;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden; height: 100vh; width: 100vw;
+  }
+  #canvas-container { width: 100%; height: 100%; position: relative; }
+  canvas { display: block; }
+  .overlay-info {
+    position: absolute; top: 20px; left: 24px;
+    pointer-events: none; z-index: 10;
+  }
+  .overlay-info h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 600; color: #82b4ff;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
+    text-shadow: 0 0 20px rgba(130,180,255,0.3);
+  }
+  .overlay-info .subtitle {
+    font-size: 13px; color: #8f909a; font-weight: 300; letter-spacing: 1px;
+  }
+  .controls-hint {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: #44464f; letter-spacing: 1px; pointer-events: none; z-index: 10;
+  }
+  .flip-btn {
+    position: absolute; top: 20px; right: 24px; z-index: 10;
+    background: rgba(130,180,255,0.08); border: 1px solid rgba(130,180,255,0.25);
+    color: #82b4ff; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; padding: 8px 16px; cursor: pointer;
+    letter-spacing: 1px; transition: all 0.3s;
+  }
+  .flip-btn:hover { background: rgba(130,180,255,0.15); border-color: #82b4ff; }
+  .side-label {
+    position: absolute; top: 56px; right: 24px; z-index: 10;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: #8f909a; letter-spacing: 1px; pointer-events: none;
+  }
+  .dims {
+    position: absolute; bottom: 20px; right: 24px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: #44464f; pointer-events: none; z-index: 10;
+  }
+</style>
+</head>
+<body>
+<div id="canvas-container">
+  <div class="overlay-info">
+    <h1>MorayGlow</h1>
+    <div class="subtitle">XIAO ESP32-S3 RGB LED Controller — IguanaWare</div>
+  </div>
+  <button class="flip-btn" id="flipBtn">FLIP BOARD</button>
+  <div class="side-label" id="sideLabel">FRONT</div>
+  <div class="controls-hint">LEFT-DRAG ROTATE · RIGHT-DRAG/SHIFT+DRAG PAN · SCROLL ZOOM · DOUBLE-CLICK RESET</div>
+  <div class="dims">48 × 38 × 1.6 mm</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const FRONT_IMG = 'pcb-front.jpg';
+const BACK_IMG  = 'pcb-back.jpg';
+
+const BW = 38.0;
+const BH = 48.0;
+const BT = 1.6;
+
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111318);
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+container.appendChild(renderer.domElement);
+
+// Lighting
+scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+const key = new THREE.DirectionalLight(0xffffff, 0.45);
+key.position.set(20, 60, 30); key.castShadow = true; scene.add(key);
+const fill = new THREE.DirectionalLight(0xeeeeff, 0.15);
+fill.position.set(-30, 40, -20); scene.add(fill);
+
+// Group hierarchy
+const outerGroup = new THREE.Group();
+outerGroup.rotation.y = Math.PI / 2;
+scene.add(outerGroup);
+
+const flipGroup = new THREE.Group();
+outerGroup.add(flipGroup);
+
+// Edge box
+const edgeMat = new THREE.MeshStandardMaterial({ color: 0x1a3311, roughness: 0.7 });
+const edgeBox = new THREE.Mesh(new THREE.BoxGeometry(BW, BT, BH), edgeMat);
+edgeBox.castShadow = true;
+edgeBox.receiveShadow = true;
+flipGroup.add(edgeBox);
+
+// TOP plane — front photo
+// PlaneGeometry faces +Z by default. Rotate to face +Y (up).
+const topMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.25, metalness: 0.05 });
+const topPlane = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), topMat);
+topPlane.rotation.x = -Math.PI / 2;  // now faces up
+topPlane.position.y = BT / 2 + 0.005;
+flipGroup.add(topPlane);
+
+// BOTTOM plane — back photo
+// Instead of rotating to face down (which flips UVs),
+// rotate to face UP and then use scale.y = -1 to flip it downward.
+// This preserves the UV orientation so the texture isn't mirrored.
+const botMat = new THREE.MeshStandardMaterial({
+  color: 0x0a0a0a, roughness: 0.25, metalness: 0.05,
+  side: THREE.BackSide  // render the back face since we're looking from below
+});
+const botPlane = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), botMat);
+botPlane.rotation.x = -Math.PI / 2;  // faces up, same as top
+botPlane.position.y = -BT / 2 - 0.005;
+botPlane.scale.y = -1;  // flip it to face down — UVs unchanged
+flipGroup.add(botPlane);
+
+// Load textures — both raw, no manipulation
+const loader = new THREE.TextureLoader();
+
+function applyTex(material, tex) {
+  tex.encoding = THREE.sRGBEncoding;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  material.map = tex;
+  material.color.set(0xffffff);
+  material.needsUpdate = true;
+}
+
+loader.load(FRONT_IMG, tex => applyTex(topMat, tex));
+loader.load(BACK_IMG, tex => applyTex(botMat, tex));
+
+// ══ Orbit + Pan + Zoom ══
+let isDragging = false, isPanning = false;
+let prevMouse = { x: 0, y: 0 };
+const INIT_SPH = { theta: 0.3, phi: Math.PI / 3.5, radius: 70 };
+let sph = { ...INIT_SPH };
+let tgt = new THREE.Vector3(0, 0, 0);
+
+function updCam() {
+  const x = sph.radius * Math.sin(sph.phi) * Math.sin(sph.theta);
+  const y = sph.radius * Math.cos(sph.phi);
+  const z = sph.radius * Math.sin(sph.phi) * Math.cos(sph.theta);
+  camera.position.set(tgt.x + x, tgt.y + y, tgt.z + z);
+  camera.lookAt(tgt);
+}
+updCam();
+
+renderer.domElement.addEventListener('mousedown', e => {
+  if (e.button === 2 || e.button === 1 || (e.button === 0 && e.shiftKey)) {
+    isPanning = true;
+  } else if (e.button === 0) {
+    isDragging = true;
+  }
+  prevMouse = { x: e.clientX, y: e.clientY };
+  e.preventDefault();
+});
+renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+window.addEventListener('mouseup', () => { isDragging = false; isPanning = false; });
+
+renderer.domElement.addEventListener('mousemove', e => {
+  if (!isDragging && !isPanning) return;
+  const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
+  prevMouse = { x: e.clientX, y: e.clientY };
+  if (isPanning) {
+    const panScale = sph.radius * 0.001;
+    const right = new THREE.Vector3(), up = new THREE.Vector3(), fwd = new THREE.Vector3();
+    camera.getWorldDirection(fwd);
+    right.crossVectors(camera.up, fwd).normalize();
+    up.crossVectors(fwd, right).normalize();
+    tgt.add(right.multiplyScalar(dx * panScale));
+    tgt.add(up.multiplyScalar(dy * panScale));
+  } else {
+    sph.theta -= dx * 0.005;
+    sph.phi = Math.max(0.1, Math.min(Math.PI - 0.1, sph.phi + dy * 0.005));
+  }
+  updCam();
+});
+renderer.domElement.addEventListener('wheel', e => {
+  e.preventDefault();
+  sph.radius = Math.max(25, Math.min(200, sph.radius * (1 + e.deltaY * 0.001)));
+  updCam();
+}, { passive: false });
+
+// Touch
+let pinchD = 0, pinchMid = { x: 0, y: 0 };
+renderer.domElement.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) { isDragging = true; prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }
+  else if (e.touches.length === 2) {
+    isDragging = false;
+    pinchD = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    pinchMid = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+  }
+}, { passive: false });
+renderer.domElement.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && isDragging) {
+    const dx = e.touches[0].clientX - prevMouse.x, dy = e.touches[0].clientY - prevMouse.y;
+    prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    sph.theta -= dx * 0.005;
+    sph.phi = Math.max(0.1, Math.min(Math.PI - 0.1, sph.phi + dy * 0.005));
+    updCam();
+  } else if (e.touches.length === 2) {
+    const nd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    sph.radius = Math.max(25, Math.min(200, sph.radius * (1 - (nd - pinchD) * 0.003)));
+    pinchD = nd;
+    const newMid = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+    const panScale = sph.radius * 0.001;
+    const right = new THREE.Vector3(), up = new THREE.Vector3(), fwd = new THREE.Vector3();
+    camera.getWorldDirection(fwd);
+    right.crossVectors(camera.up, fwd).normalize();
+    up.crossVectors(fwd, right).normalize();
+    tgt.add(right.multiplyScalar((newMid.x - pinchMid.x) * panScale));
+    tgt.add(up.multiplyScalar((newMid.y - pinchMid.y) * panScale));
+    pinchMid = newMid;
+    updCam();
+  }
+}, { passive: false });
+renderer.domElement.addEventListener('touchend', e => { isDragging = false; if (e.touches.length < 2) pinchD = 0; });
+
+renderer.domElement.addEventListener('dblclick', () => {
+  sph = { ...INIT_SPH };
+  tgt.set(0, 0, 0);
+  updCam();
+});
+
+// ══ Flip around horizontal centre line (local X axis) ══
+let flipped = false, flipTarget = 0, flipCurrent = 0;
+const flipBtn = document.getElementById('flipBtn');
+const sideLabel = document.getElementById('sideLabel');
+flipBtn.addEventListener('click', () => {
+  flipped = !flipped;
+  flipTarget = flipped ? Math.PI : 0;
+  flipBtn.textContent = flipped ? 'SHOW FRONT' : 'FLIP BOARD';
+  sideLabel.textContent = flipped ? 'BACK' : 'FRONT';
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  flipCurrent += (flipTarget - flipCurrent) * 0.08;
+  flipGroup.rotation.x = flipCurrent;
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

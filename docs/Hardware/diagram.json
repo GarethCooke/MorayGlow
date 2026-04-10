@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "author": "MorayGlow",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "id": "xiao",
+      "type": "board-seeed-xiao-esp32s3",
+      "top": 160,
+      "left": 160,
+      "attrs": {}
+    },
+    {
+      "id": "r1",
+      "type": "wokwi-resistor",
+      "top": 96,
+      "left": 380,
+      "attrs": { "value": "100", "label": "R1" },
+      "rotate": 90
+    },
+    {
+      "id": "r2",
+      "type": "wokwi-resistor",
+      "top": 192,
+      "left": 380,
+      "attrs": { "value": "100", "label": "R2" },
+      "rotate": 90
+    },
+    {
+      "id": "r3",
+      "type": "wokwi-resistor",
+      "top": 288,
+      "left": 380,
+      "attrs": { "value": "100", "label": "R3" },
+      "rotate": 90
+    },
+    {
+      "id": "r4",
+      "type": "wokwi-resistor",
+      "top": 96,
+      "left": 500,
+      "attrs": { "value": "10000", "label": "R4" },
+      "rotate": 90
+    },
+    {
+      "id": "r5",
+      "type": "wokwi-resistor",
+      "top": 192,
+      "left": 500,
+      "attrs": { "value": "10000", "label": "R5" },
+      "rotate": 90
+    },
+    {
+      "id": "r6",
+      "type": "wokwi-resistor",
+      "top": 288,
+      "left": 500,
+      "attrs": { "value": "10000", "label": "R6" },
+      "rotate": 90
+    },
+    {
+      "id": "r7",
+      "type": "wokwi-resistor",
+      "top": 380,
+      "left": 380,
+      "attrs": { "value": "330", "label": "R7" },
+      "rotate": 90
+    },
+    {
+      "id": "q1",
+      "type": "wokwi-nmosfet",
+      "top": 80,
+      "left": 600,
+      "attrs": { "label": "Q1-Red" }
+    },
+    {
+      "id": "q2",
+      "type": "wokwi-nmosfet",
+      "top": 176,
+      "left": 600,
+      "attrs": { "label": "Q2-Green" }
+    },
+    {
+      "id": "q3",
+      "type": "wokwi-nmosfet",
+      "top": 272,
+      "left": 600,
+      "attrs": { "label": "Q3-Blue" }
+    },
+    {
+      "id": "led_r",
+      "type": "wokwi-led",
+      "top": 60,
+      "left": 720,
+      "attrs": { "color": "red", "label": "Strip R" }
+    },
+    {
+      "id": "led_g",
+      "type": "wokwi-led",
+      "top": 156,
+      "left": 720,
+      "attrs": { "color": "lime", "label": "Strip G" }
+    },
+    {
+      "id": "led_b",
+      "type": "wokwi-led",
+      "top": 252,
+      "left": 720,
+      "attrs": { "color": "blue", "label": "Strip B" }
+    },
+    {
+      "id": "led_status",
+      "type": "wokwi-led",
+      "top": 370,
+      "left": 480,
+      "attrs": { "color": "blue", "label": "LED1 Status" }
+    },
+    {
+      "id": "btn",
+      "type": "wokwi-pushbutton",
+      "top": 440,
+      "left": 160,
+      "attrs": { "color": "gray", "label": "SW1 Reset" }
+    },
+    {
+      "id": "c1",
+      "type": "wokwi-capacitor",
+      "top": 480,
+      "left": 280,
+      "attrs": { "capacitance": "0.0000001", "label": "C1 100nF" }
+    },
+    {
+      "id": "c2",
+      "type": "wokwi-capacitor",
+      "top": 480,
+      "left": 340,
+      "attrs": { "capacitance": "0.00001", "label": "C2 10µF" }
+    }
+  ],
+  "connections": [
+    ["xiao:D0", "r1:1", "red",   []],
+    ["xiao:D1", "r2:1", "green", []],
+    ["xiao:D2", "r3:1", "blue",  []],
+
+    ["r1:2", "q1:G", "red",   []],
+    ["r2:2", "q2:G", "green", []],
+    ["r3:2", "q3:G", "blue",  []],
+
+    ["r1:2", "r4:1", "red",   []],
+    ["r2:2", "r5:1", "green", []],
+    ["r3:2", "r6:1", "blue",  []],
+
+    ["r4:2", "xiao:GND", "black", []],
+    ["r5:2", "xiao:GND", "black", []],
+    ["r6:2", "xiao:GND", "black", []],
+
+    ["q1:S", "xiao:GND", "black", []],
+    ["q2:S", "xiao:GND", "black", []],
+    ["q3:S", "xiao:GND", "black", []],
+
+    ["q1:D", "led_r:K",  "red",   []],
+    ["q2:D", "led_g:K",  "green", []],
+    ["q3:D", "led_b:K",  "blue",  []],
+
+    ["led_r:A", "xiao:5V", "red",   []],
+    ["led_g:A", "xiao:5V", "green", []],
+    ["led_b:A", "xiao:5V", "blue",  []],
+
+    ["xiao:D3", "r7:1", "orange", []],
+    ["r7:2",    "led_status:A", "orange", []],
+    ["led_status:K", "xiao:GND", "black", []],
+
+    ["xiao:D4", "btn:1.l", "gray", []],
+    ["btn:2.l",  "xiao:GND", "black", []],
+
+    ["xiao:5V",  "c1:1", "yellow", []],
+    ["xiao:5V",  "c2:1", "yellow", []],
+    ["c1:2", "xiao:GND", "black", []],
+    ["c2:2", "xiao:GND", "black", []]
+  ],
+  "dependencies": {}
+}

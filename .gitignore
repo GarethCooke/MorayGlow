@@ -1,0 +1,13 @@
+# PlatformIO build artifacts and downloaded libraries
+MorrayServer/.pio/
+
+# Node.js dependencies
+MorrayClient/node_modules/
+MorrayClient/test-server/node_modules/
+
+# Claude Code local settings (tool permissions, per-machine config)
+.claude/
+
+# OS artifacts
+.DS_Store
+Thumbs.db

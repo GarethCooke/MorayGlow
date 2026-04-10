@@ -1,0 +1,51 @@
+MorayGlow — XIAO ESP32-S3 RGB LED Strip Controller
+Bill of Materials — SMD and Through-Hole options
+Generated: 2026-02-28
+Circuit topology is identical for both builds; only packages and footprints differ.
+================================================================================
+
+=== SMD BUILD ===
+Reference,Qty,Value,Description,Footprint,Part Number / Source
+U1,1,XIAO ESP32-S3,Seeed XIAO ESP32-S3 Plus SMD module (castellated edges),Module:XIAO-ESP32-S3,Seeed 113991116
+Q1,1,IRLML6344TR,N-Ch SOT-23 MOSFET Vgs(th)≈1.0V Id=5A Red channel,Package_TO_SOT_SMD:SOT-23,Digikey IRLML6344TRPBFCT-ND
+Q2,1,IRLML6344TR,N-Ch SOT-23 MOSFET Vgs(th)≈1.0V Id=5A Green channel,Package_TO_SOT_SMD:SOT-23,Digikey IRLML6344TRPBFCT-ND
+Q3,1,IRLML6344TR,N-Ch SOT-23 MOSFET Vgs(th)≈1.0V Id=5A Blue channel,Package_TO_SOT_SMD:SOT-23,Digikey IRLML6344TRPBFCT-ND
+D1,1,1N5819HW-7-F,Schottky 40V 1A SOD-123 USB/12V back-feed protection,Diode_SMD:D_SOD-123,Digikey 1N5819HW-FDICT-ND
+R1,1,100Ω,Gate resistor Q1 Red 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
+R2,1,100Ω,Gate resistor Q2 Green 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
+R3,1,100Ω,Gate resistor Q3 Blue 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
+R4,1,10kΩ,Gate pull-down Q1 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
+R5,1,10kΩ,Gate pull-down Q2 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
+R6,1,10kΩ,Gate pull-down Q3 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
+R7,1,330Ω,Status LED current limiter 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C23138
+C1,1,100nF,VBUS decoupling ceramic 16V 0603,Capacitor_SMD:C_0603_1608Metric,LCSC C14663
+C2,1,10µF,VBUS bulk cap X5R 10V 0805,Capacitor_SMD:C_0805_2012Metric,LCSC C15850
+C3,1,100nF,12V rail decoupling ceramic 25V 0603,Capacitor_SMD:C_0603_1608Metric,LCSC C14663
+LED1,1,LED Blue,Status indicator 0805,LED_SMD:LED_0805_2012Metric,LCSC C72038
+SW1,1,SW_Push,Tactile pushbutton 6mm SMD 4-pin,Button_Switch_SMD:SW_SPST_PTS645,LCSC C318884
+PS1,1,MP1584 Buck 5V,Buck module 7-28V in / 5V 3A out — connect via 2.54mm headers,Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical,Generic module
+J1,1,Barrel Jack 5.5/2.1,12V DC input SMD horizontal,Connector_BarrelJack:BarrelJack_Horizontal,LCSC C381116
+J2,1,Screw Terminal 4P 3.5mm,RGB strip connector SMD,Connector_Phoenix_MC:PhoenixContact_MC_1,5_4-G-3.5_1x04,LCSC C395916
+
+=== THROUGH-HOLE BUILD ===
+Reference,Qty,Value,Description,Footprint,Part Number / Source,Notes
+U1,1,XIAO ESP32-S3,Same XIAO module soldered to 2×7 2.54mm female pin sockets,2×7 2.54mm socket headers,Seeed 113991116 + sockets,XIAO has 0.7mm hole pitch — use castellated SMD or buy with pre-soldered headers
+Q1,1,IRL540N,N-Ch TO-220 Logic Level MOSFET Vgs(th)≤2.0V Id=36A Red channel,Package_TO_SOT_THT:TO-220-3_Vertical,Digikey IRL540NPBF-ND,3.3V gate drive gives ~100-150mΩ Rds(on) — fully adequate for strip current
+Q2,1,IRL540N,N-Ch TO-220 Logic Level MOSFET Vgs(th)≤2.0V Id=36A Green channel,Package_TO_SOT_THT:TO-220-3_Vertical,Digikey IRL540NPBF-ND,Pin order: G=1 D=2 S=3 (flat face toward you left to right)
+Q3,1,IRL540N,N-Ch TO-220 Logic Level MOSFET Vgs(th)≤2.0V Id=36A Blue channel,Package_TO_SOT_THT:TO-220-3_Vertical,Digikey IRL540NPBF-ND,No heatsink needed at ≤3A per channel
+D1,1,1N5819,Schottky 40V 1A DO-41 axial USB/12V back-feed protection,Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal,LCSC C727110,Cathode band toward XIAO VBUS pin
+R1,1,100Ω,Gate resistor Q1 Red 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
+R2,1,100Ω,Gate resistor Q2 Green 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
+R3,1,100Ω,Gate resistor Q3 Blue 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
+R4,1,10kΩ,Gate pull-down Q1 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
+R5,1,10kΩ,Gate pull-down Q2 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
+R6,1,10kΩ,Gate pull-down Q3 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
+R7,1,330Ω,Status LED current limiter 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57502,Standard carbon film 1/4W
+C1,1,100nF,VBUS decoupling ceramic disc 50V 5mm pitch,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,LCSC C49678,Non-polarised — orientation does not matter
+C2,1,10µF 25V,VBUS bulk cap aluminium electrolytic radial 5mm pitch,Capacitor_THT:CP_Radial_D5.0mm_P2.50mm,LCSC C36369,Polarised — long lead = positive (VBUS)
+C3,1,100nF,12V rail decoupling ceramic disc 50V 5mm pitch,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,LCSC C49678,Non-polarised — orientation does not matter
+LED1,1,LED Blue 5mm,Status indicator 5mm through-hole LED,LED_THT:LED_D5.0mm,LCSC C2296,Long lead = anode (+) — cathode has flat on lens rim
+SW1,1,SW_Push 6mm,Tactile pushbutton 6×6mm through-hole,Button_Switch_THT:SW_Tactile_Straight_KSA0Axx1LFTR,LCSC C318885,All four legs are equivalent pairs — orientation does not matter
+PS1,1,MP1584 Buck 5V,Same buck module — connect via 2×2 2.54mm pin headers soldered in,Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical,Generic module,Solder 4 header pins to module pads first
+J1,1,Barrel Jack 5.5/2.1,12V DC input through-hole horizontal,Connector_BarrelJack:BarrelJack_Horizontal,LCSC C136706 / CUI PJ-002AH,Centre pin = +12V; sleeve = GND
+J2,1,Screw Terminal 4P 3.5mm,RGB strip connector through-hole 3.5mm pitch,Connector_Phoenix_MC:PhoenixContact_MC_1,5_4-G-3.5_1x04_THT,LCSC C474870,Or use 5.08mm pitch (more common in TH): LCSC C395916-TH

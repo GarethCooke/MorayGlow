@@ -1,0 +1,175 @@
+MorayGlow — XIAO ESP32-S3 RGB LED Strip Controller
+Circuit Reference  (ASCII block diagram)
+Generated: 2026-02-28
+================================================================================
+Circuit topology is identical for SMD and through-hole builds.
+See COMPONENT ALTERNATIVES section at the bottom for TH part substitutions.
+================================================================================
+
+POWER DOMAIN OVERVIEW
+─────────────────────
+  J1 (12V barrel)
+   │
+   ├──[C3 100nF]──GND          12V decoupling
+   │
+   ├─────────────────────────── VCC_12V rail ─────────────────────────────┐
+   │                                                                       │
+   └──── PS1 (MP1584 buck module) ────────────────────────────────────┐  J2 pin-1
+          7-28V IN → 5V/3A OUT                                         │  (strip +12V)
+                │                                                      │
+               VDD_5V                                                  │
+                │                                                      │
+         D1 (1N5819HW, Schottky ~0.3V drop)                           │
+          anode ──── cathode                                           │
+                          │                                            │
+                        VBUS                                           │
+                          ├──[C1 100nF]──GND    VBUS decoupling        │
+                          ├──[C2 10µF ]──GND    VBUS bulk cap          │
+                          │                                            │
+                     U1 VBUS pin                                       │
+                                                                       │
+XIAO ESP32-S3 (U1)                                                     │
+─────────────────────────────────────────────────────────────────────  │
+                                                                       │
+  GPIO1 (D0) ──[R1 100Ω]──┬── Q1 GATE                                 │
+                           └──[R4 10kΩ]── GND                         │
+                                Q1 DRAIN ─────────────────────────── J2 pin-3 (LED R-)
+                                Q1 SOURCE ── GND
+
+  GPIO2 (D1) ──[R2 100Ω]──┬── Q2 GATE                                 │
+                           └──[R5 10kΩ]── GND                         │
+                                Q2 DRAIN ─────────────────────────── J2 pin-2 (LED G-)
+                                Q2 SOURCE ── GND
+
+  GPIO3 (D2) ──[R3 100Ω]──┬── Q3 GATE                                 │
+                           └──[R6 10kΩ]── GND                         │
+                                Q3 DRAIN ─────────────────────────── J2 pin-4 (LED B-)
+                                Q3 SOURCE ── GND
+
+  GPIO4 (D3) ──[R7 330Ω]── LED1 (A)──[LED1 K]── GND   (status LED)
+
+  GPIO5 (D4) ──────────────┬── SW1 ── GND              (reset button)
+  (INPUT_PULLUP)            │   (normally-open, active-LOW)
+                            └── internal pull-up (50kΩ typ)
+
+  GND ── Common ground plane
+
+J2 SCREW TERMINAL (4-pin, 3.5mm pitch)
+───────────────────────────────────────
+  Pin 1 │ 12V  │ Strip common anode (+12V)
+  Pin 2 │ G-   │ Green cathode → Q2 DRAIN
+  Pin 3 │ R-   │ Red   cathode → Q1 DRAIN
+  Pin 4 │ B-   │ Blue  cathode → Q3 DRAIN
+
+MOSFET SWITCH (per channel — same topology for Q1/Q2/Q3)
+─────────────────────────────────────────────────────────
+
+  GPIO ──[100Ω]──┬── GATE ──┐
+                 │           │
+               [10kΩ]        │
+                 │           │     G
+                GND          │     │        +12V
+                             └──[MOSFET]     │
+                                    │ D ──── J2 (LED strip colour -)
+                                    │ S ──── GND
+
+  SMD:  IRLML6344TR  SOT-23   Vgs(th) ≈ 1.0V  Rds(on) ≈ 22mΩ @ Vgs=4.5V  Id=5A
+  TH:   IRL540N      TO-220   Vgs(th) ≤ 2.0V  Rds(on) ≈ 77mΩ @ Vgs=5.0V  Id=36A
+        (at 3.3V drive: fully enhanced, Rds(on) ≈ 100-150mΩ — adequate for ≤5A)
+        TO-220 pin order (flat face, left→right): GATE · DRAIN · SOURCE
+
+  Gate resistor (100Ω): limits inrush, damps ringing on gate.
+  Pull-down (10kΩ):     holds gate LOW when GPIO is hi-Z (boot / reset).
+
+PWM PARAMETERS
+──────────────
+  Frequency  : 1 kHz
+  Resolution : 8-bit  (0–255)
+  API        : ESP32 LEDC (ledcSetup / ledcAttachPin / ledcWrite)
+  Channels   : CH0=Red  CH1=Green  CH2=Blue
+
+BUTTON BEHAVIOUR
+────────────────
+  Press < 5 s  : no action
+  Hold ≥ 5 s   : status LED blinks faster → 5× flash → ESP.restart()
+  Debounce     : 50 ms
+
+FIRMWARE COLOUR CYCLE (3 s per step, auto-advance)
+────────────────────────────────────────────────────
+  Red → Green → Blue → Yellow → Cyan → Magenta → White → Amber → (repeat)
+
+================================================================================
+COMPONENT ALTERNATIVES — SMD vs THROUGH-HOLE
+================================================================================
+
+All topology, resistor values, and GPIO assignments are identical between builds.
+Only package, footprint, and in some cases the exact part number differ.
+
+ Ref    │ SMD                      │ Package    │ TH Alternative         │ Package
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ U1     │ XIAO ESP32-S3 (SMD)      │ Castellated│ XIAO ESP32-S3 + socket │ 2×7 socket
+        │ Seeed 113991116          │            │ 2.54mm female headers  │ 2.54mm
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ Q1-Q3  │ IRLML6344TR              │ SOT-23     │ IRL540N                │ TO-220
+        │ Digikey IRLML6344TR-ND  │            │ Digikey IRL540NPBF-ND  │
+        │                          │            │ NOTE: 3.3V drive OK,   │
+        │                          │            │ Rds(on) ≈ 100-150mΩ  │
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ D1     │ 1N5819HW-7-F             │ SOD-123    │ 1N5819                 │ DO-41 axial
+        │ Digikey 1N5819HW-FDICT-ND│            │ LCSC C727110           │
+        │                          │            │ Cathode band → VBUS    │
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ R1-R3  │ 100Ω  1/10W              │ 0603       │ 100Ω  1/4W axial       │ DIN0207
+        │ LCSC C22775              │            │ LCSC C57430            │ 10mm pitch
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ R4-R6  │ 10kΩ  1/10W              │ 0603       │ 10kΩ  1/4W axial       │ DIN0207
+        │ LCSC C25804              │            │ LCSC C57690            │ 10mm pitch
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ R7     │ 330Ω  1/10W              │ 0603       │ 330Ω  1/4W axial       │ DIN0207
+        │ LCSC C23138              │            │ LCSC C57502            │ 10mm pitch
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ C1,C3  │ 100nF ceramic  16-25V    │ 0603       │ 100nF ceramic disc 50V │ 5mm disc
+        │ LCSC C14663              │            │ LCSC C49678            │ non-polarised
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ C2     │ 10µF  X5R  10V           │ 0805       │ 10µF electrolytic 25V  │ Radial 5mm
+        │ LCSC C15850              │            │ LCSC C36369            │ long lead = +
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ LED1   │ Blue LED                 │ 0805       │ Blue LED 5mm           │ 5mm THT
+        │ LCSC C72038              │            │ LCSC C2296             │ long lead = A
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ SW1    │ Tactile 6mm SMD          │ SMD        │ Tactile 6mm THT        │ 4-pin THT
+        │ LCSC C318884             │            │ LCSC C318885           │ any orient.
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ PS1    │ MP1584 buck module       │ 2×2 header │ Same module + headers  │ 2×2 header
+        │ (generic)                │            │ solder pins first      │
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ J1     │ Barrel jack SMD horiz.   │ SMD horiz. │ Barrel jack THT horiz. │ THT horiz.
+        │ LCSC C381116             │            │ LCSC C136706           │ centre=+12V
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ J2     │ Phoenix screw term. SMD  │ 3.5mm SMD  │ Screw terminal THT     │ 3.5mm THT
+        │ LCSC C395916             │            │ LCSC C474870           │ or 5.08mm
+
+THROUGH-HOLE ASSEMBLY TIPS
+──────────────────────────
+  1. IRL540N (TO-220) gate threshold: fully enhances at 3.3V GPIO. Rds(on) is
+     higher than IRLML6344TR (~100-150mΩ vs ~22mΩ) but adequate for strip currents.
+     The 100Ω gate resistor and 10kΩ pull-down are unchanged.
+
+  2. Electrolytic cap C2: observe polarity. Long lead (positive) to VBUS (+5V line).
+     Reverse polarity will destroy the capacitor.
+
+  3. Schottky diode D1 (DO-41): cathode band (silver ring) connects toward XIAO VBUS.
+     Anode connects to MP1584 +5V output.
+
+  4. 5mm LED: long lead = anode. Current through R7 (330Ω) from 3.3V GPIO:
+     I = (3.3 - 2.0) / 330 ≈ 4 mA — sufficient for indicator visibility.
+
+  5. XIAO ESP32-S3 module: the XIAO does not have through-hole legs. For TH builds,
+     solder 2×7 female machine-pin sockets to the PCB and press the XIAO on top.
+     This also allows the module to be swapped easily.
+
+  6. Tactile switch SW1: the 6mm THT version (C318885) is pin-compatible with the
+     SMD footprint when used on perfboard/stripboard. Orientation does not matter
+     (both pairs of legs are shorted internally when pressed).
+
+================================================================================

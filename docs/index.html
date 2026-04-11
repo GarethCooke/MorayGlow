@@ -226,6 +226,7 @@ li { margin-bottom: 0.4rem; }
 }
 .schematic-card svg { display: block; width: 100%; height: auto; }
 .schematic-card img { display: block; width: 100%; height: auto; border-radius: var(--md-shape-md); }
+.zoomable { cursor: zoom-in; }
 
 /* ── Tables ──────────────────────────────────────────────────────── */
 .table-wrap { border-radius: var(--md-shape-md); overflow: hidden; border: 1px solid var(--md-outline-var); margin: 1rem 0; }
@@ -928,7 +929,7 @@ footer .material-icons { font-size: 16px; }
 
       <h3>Full KiCad Schematic</h3>
       <div class="schematic-card">
-        <img src="Hardware/schematic-kicad.png" alt="MorayGlow KiCad schematic — full circuit including MOSFET drive, MP1584 buck converter, decoupling capacitors, and RGB strip connectors">
+        <img src="Hardware/schematic-kicad.png" alt="MorayGlow KiCad schematic — full circuit including MOSFET drive, MP1584 buck converter, decoupling capacitors, and RGB strip connectors" class="zoomable">
       </div>
 
       <div class="alert info">
@@ -1383,7 +1384,7 @@ npm test           # tests logic.js + server.js</code></pre>
   // Screenshot lightbox
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
-  document.querySelectorAll('.screenshot-card img').forEach(img => {
+  document.querySelectorAll('.screenshot-card img, .zoomable').forEach(img => {
     img.addEventListener('click', () => {
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;

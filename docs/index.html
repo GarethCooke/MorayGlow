@@ -225,6 +225,7 @@ li { margin-bottom: 0.4rem; }
   margin: 1.25rem 0; box-shadow: var(--md-elev2);
 }
 .schematic-card svg { display: block; width: 100%; height: auto; }
+.schematic-card img { display: block; width: 100%; height: auto; border-radius: var(--md-shape-md); }
 
 /* ── Tables ──────────────────────────────────────────────────────── */
 .table-wrap { border-radius: var(--md-shape-md); overflow: hidden; border: 1px solid var(--md-outline-var); margin: 1rem 0; }
@@ -234,6 +235,22 @@ th { padding: 0.75rem 1rem; text-align: left; color: var(--md-on-surface); font-
 td { padding: 0.7rem 1rem; border-top: 1px solid var(--md-outline-var); color: var(--md-on-surface-var); vertical-align: top; }
 tbody tr:hover { background: rgba(130,180,255,0.04); }
 td:first-child { color: var(--md-on-surface); font-weight: 500; font-family: "Roboto Mono", monospace; font-size: 0.82rem; }
+
+/* ── BOM tabs ────────────────────────────────────────────────────── */
+.bom-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.bom-tab {
+  padding: 0.4rem 1.25rem; border-radius: var(--md-shape-full);
+  border: 1px solid var(--md-outline-var);
+  background: transparent; color: var(--md-on-surface-var);
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bom-tab.active {
+  background: var(--md-primary-container); color: var(--md-on-primary-cont);
+  border-color: rgba(130,180,255,0.35);
+}
+.bom-panel { display: none; }
+.bom-panel.active { display: block; }
 
 /* ── Code ────────────────────────────────────────────────────────── */
 .code-block {
@@ -427,6 +444,10 @@ footer .material-icons { font-size: 16px; }
   <a href="#hardware" class="nav-item">
     <div class="nav-pill"><span class="material-icons">memory</span></div>
     <span>HW</span>
+  </a>
+  <a href="#bom" class="nav-item">
+    <div class="nav-pill"><span class="material-icons">list_alt</span></div>
+    <span>BOM</span>
   </a>
   <a href="#schematic" class="nav-item">
     <div class="nav-pill"><span class="material-icons">schema</span></div>
@@ -650,6 +671,89 @@ footer .material-icons { font-size: 16px; }
       </div>
     </section>
 
+    <!-- ── Bill of Materials ──────────────────────────────────────────── -->
+    <section class="section" id="bom">
+      <div class="section-header">
+        <div class="section-icon green">
+          <span class="material-icons">list_alt</span>
+        </div>
+        <h2>Bill of Materials</h2>
+      </div>
+
+      <p>Two build variants share the same circuit topology. The SMD build is designed for the custom PCB; the through-hole build suits breadboard or perfboard prototyping.</p>
+
+      <div class="bom-tabs">
+        <button type="button" class="bom-tab active" data-target="bom-smd">SMD (PCB build)</button>
+        <button type="button" class="bom-tab" data-target="bom-tht">Through-hole (prototype)</button>
+      </div>
+
+      <!-- SMD BOM -->
+      <div id="bom-smd" class="bom-panel active">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ref</th>
+                <th>Qty</th>
+                <th>Value</th>
+                <th>Description</th>
+                <th>Part / Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>U1</td><td>1</td><td>XIAO ESP32-S3</td><td>Seeed XIAO ESP32-S3 Plus SMD module (castellated edges)</td><td>Seeed 113991116</td></tr>
+              <tr><td>Q1–Q3</td><td>3</td><td>IRLML6344TR</td><td>N-Ch SOT-23 MOSFET V<sub>GS(th)</sub>≈1.0V I<sub>d</sub>=5A — R/G/B channels</td><td>Digikey IRLML6344TRPBFCT-ND</td></tr>
+              <tr><td>D1</td><td>1</td><td>1N5819HW-7-F</td><td>Schottky 40V 1A SOD-123 — USB/12V back-feed protection</td><td>Digikey 1N5819HW-FDICT-ND</td></tr>
+              <tr><td>R1–R3</td><td>3</td><td>100 Ω</td><td>Gate resistors Q1–Q3, 1/10W 0603</td><td>LCSC C22775</td></tr>
+              <tr><td>R4–R6</td><td>3</td><td>10 kΩ</td><td>Gate pull-downs Q1–Q3, 1/10W 0603</td><td>LCSC C25804</td></tr>
+              <tr><td>R7</td><td>1</td><td>330 Ω</td><td>Status LED current limiter, 1/10W 0603</td><td>LCSC C23138</td></tr>
+              <tr><td>C1, C3</td><td>2</td><td>100 nF</td><td>VBUS &amp; 12V rail decoupling, ceramic 16V / 25V 0603</td><td>LCSC C14663</td></tr>
+              <tr><td>C2</td><td>1</td><td>10 µF</td><td>VBUS bulk cap, X5R 10V 0805</td><td>LCSC C15850</td></tr>
+              <tr><td>LED1</td><td>1</td><td>LED Blue 0805</td><td>Status indicator, 0805</td><td>LCSC C72038</td></tr>
+              <tr><td>SW1</td><td>1</td><td>Tactile 6mm</td><td>Pushbutton 6mm SMD 4-pin</td><td>LCSC C318884</td></tr>
+              <tr><td>PS1</td><td>1</td><td>MP1584 Buck 5V</td><td>Buck module 7–28V in / 5V 3A out, via 2.54mm headers</td><td>Generic module</td></tr>
+              <tr><td>J1</td><td>1</td><td>Barrel Jack 5.5/2.1</td><td>12V DC input, SMD horizontal</td><td>LCSC C381116</td></tr>
+              <tr><td>J2</td><td>1</td><td>Screw Terminal 4P 3.5mm</td><td>RGB strip connector, SMD</td><td>LCSC C395916</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- THT BOM -->
+      <div id="bom-tht" class="bom-panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ref</th>
+                <th>Qty</th>
+                <th>Value</th>
+                <th>Description</th>
+                <th>Part / Source</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>U1</td><td>1</td><td>XIAO ESP32-S3</td><td>XIAO module on 2×7 2.54mm female sockets</td><td>Seeed 113991116 + sockets</td><td>XIAO has 0.7mm hole pitch — use castellated SMD or buy with pre-soldered headers</td></tr>
+              <tr><td>Q1–Q3</td><td>3</td><td>IRL540N</td><td>N-Ch TO-220 logic-level MOSFET V<sub>GS(th)</sub>≤2.0V I<sub>d</sub>=36A — R/G/B channels</td><td>Digikey IRL540NPBF-ND</td><td>3.3V gate drive gives ~100–150 mΩ R<sub>DS(on)</sub>. Pin order: G=1 D=2 S=3 (flat face toward you)</td></tr>
+              <tr><td>D1</td><td>1</td><td>1N5819</td><td>Schottky 40V 1A DO-41 axial — USB/12V back-feed protection</td><td>LCSC C727110</td><td>Cathode band toward XIAO VBUS pin</td></tr>
+              <tr><td>R1–R3</td><td>3</td><td>100 Ω</td><td>Gate resistors Q1–Q3, 1/4W axial</td><td>LCSC C57430</td><td></td></tr>
+              <tr><td>R4–R6</td><td>3</td><td>10 kΩ</td><td>Gate pull-downs Q1–Q3, 1/4W axial</td><td>LCSC C57690</td><td></td></tr>
+              <tr><td>R7</td><td>1</td><td>330 Ω</td><td>Status LED current limiter, 1/4W axial</td><td>LCSC C57502</td><td></td></tr>
+              <tr><td>C1, C3</td><td>2</td><td>100 nF</td><td>VBUS &amp; 12V rail decoupling, ceramic disc 50V 5mm pitch</td><td>LCSC C49678</td><td>Non-polarised</td></tr>
+              <tr><td>C2</td><td>1</td><td>10 µF 25V</td><td>VBUS bulk cap, aluminium electrolytic radial 5mm pitch</td><td>LCSC C36369</td><td>Long lead = positive (VBUS)</td></tr>
+              <tr><td>LED1</td><td>1</td><td>LED Blue 5mm</td><td>Status indicator, 5mm through-hole LED</td><td>LCSC C2296</td><td>Long lead = anode (+); cathode has flat on lens rim</td></tr>
+              <tr><td>SW1</td><td>1</td><td>Tactile 6×6mm</td><td>Pushbutton 6×6mm through-hole</td><td>LCSC C318885</td><td>All four legs are equivalent pairs</td></tr>
+              <tr><td>PS1</td><td>1</td><td>MP1584 Buck 5V</td><td>Same buck module — via 2×2 2.54mm pin headers</td><td>Generic module</td><td>Solder 4 header pins to module pads first</td></tr>
+              <tr><td>J1</td><td>1</td><td>Barrel Jack 5.5/2.1</td><td>12V DC input, through-hole horizontal</td><td>LCSC C136706 / CUI PJ-002AH</td><td>Centre pin = +12V; sleeve = GND</td></tr>
+              <tr><td>J2</td><td>1</td><td>Screw Terminal 4P 3.5mm</td><td>RGB strip connector, through-hole 3.5mm pitch</td><td>LCSC C474870</td><td>Or 5.08mm pitch: LCSC C395916-TH</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
     <!-- ── Schematic ─────────────────────────────────────────────────── -->
     <section class="section" id="schematic">
       <div class="section-header">
@@ -822,9 +926,14 @@ footer .material-icons { font-size: 16px; }
         </svg>
       </div>
 
+      <h3>Full KiCad Schematic</h3>
+      <div class="schematic-card">
+        <img src="Hardware/schematic-kicad.png" alt="MorayGlow KiCad schematic — full circuit including MOSFET drive, MP1584 buck converter, decoupling capacitors, and RGB strip connectors">
+      </div>
+
       <div class="alert info">
         <span class="material-icons">info</span>
-        <div class="alert-body"><strong>Full PCB schematic in KiCad.</strong> The SVG above shows the XIAO GPIO connections only. The complete schematic including IRLML6344TR MOSFET drive circuits, MP1584 buck converter, decoupling capacitors, and 12V RGB strip connectors is in <code>docs/KiCad/</code>.</div>
+        <div class="alert-body"><strong>KiCad source.</strong> The schematic above is exported from the KiCad project in <code>docs/KiCad/</code>. The SVG diagram above shows the XIAO GPIO connections; the KiCad schematic includes the complete circuit — IRLML6344TR MOSFET drive, MP1584 buck converter, decoupling capacitors, and 12V RGB strip connectors.</div>
       </div>
     </section>
 
@@ -1284,6 +1393,16 @@ npm test           # tests logic.js + server.js</code></pre>
   document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('open'));
   lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+
+  // BOM tabs
+  document.querySelectorAll('.bom-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.bom-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.bom-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
 </script>
 </body>
 </html>

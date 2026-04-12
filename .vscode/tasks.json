@@ -1,0 +1,63 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "MorayGlow: Upload Firmware (USB)",
+            "type": "shell",
+            "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3 -t upload",
+            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "MorayGlow: Upload Filesystem (USB)",
+            "type": "shell",
+            "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3 -t uploadfs",
+            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "MorayGlow: Upload Firmware (OTA)",
+            "type": "shell",
+            "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3_ota -t upload",
+            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "MorayGlow: Upload Filesystem (OTA)",
+            "type": "shell",
+            "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3_ota -t uploadfs",
+            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "MorayGlow: Upload All (OTA)",
+            "dependsOn": [
+                "MorayGlow: Upload Firmware (OTA)",
+                "MorayGlow: Upload Filesystem (OTA)"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "MorayGlow: Upload All (USB)",
+            "dependsOn": [
+                "MorayGlow: Upload Firmware (USB)",
+                "MorayGlow: Upload Filesystem (USB)"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        }
+    ]
+}

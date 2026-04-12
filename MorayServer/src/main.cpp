@@ -23,6 +23,7 @@
 #include <TwoStateValue.h>
 #include <WiFi.h>
 #include <WiFiConfig.h>
+#include <mdns.h>
 
 #include "IguanaOTA.h"
 #include "config.h"
@@ -151,6 +152,14 @@ void setupNetwork() {
             if (MDNS.begin(Device::id().c_str())) {
                 MDNS.addService("morayglow", "tcp", 80);
                 Serial.printf("mDNS: http://%s.local\n", Device::id().c_str());
+            }
+
+            // Also register generic alias so morayglow.local resolves to this device.
+            // With multiple devices on the network, mDNS returns whichever answers first.
+            {
+                mdns_ip_addr_t addr = {};
+                addr.addr.u_addr.ip4.addr = static_cast<uint32_t>(WiFi.localIP());
+                mdns_delegate_hostname_add("morayglow", &addr);
             }
 
             IguanaOTA::Initialise(OTA_HOSTNAME);

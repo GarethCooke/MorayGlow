@@ -10,14 +10,16 @@ POWER DOMAIN OVERVIEW
 ─────────────────────
   J1 (12V barrel)
    │
-   ├──[C3 100nF]──GND          12V decoupling
-   │
    ├─────────────────────────── VCC_12V rail ─────────────────────────────┐
+   │                                                                       │
+   │                                                                   [C4 100µF]──GND  12V bulk cap (PWM transients)
    │                                                                       │
    └──── PS1 (MP1584 buck module) ────────────────────────────────────┐  J2 pin-1
           7-28V IN → 5V/3A OUT                                         │  (strip +12V)
                 │                                                      │
-               VDD_5V                                                  │
+               VDD_5V
+                │
+          [C3 100nF]──GND          VDD_5V output decoupling                                                  │
                 │                                                      │
          D1 (1N5819HW, Schottky ~0.3V drop)                           │
           anode ──── cathode                                           │
@@ -32,19 +34,20 @@ XIAO ESP32-S3 (U1)                                                     │
 ─────────────────────────────────────────────────────────────────────  │
                                                                        │
   GPIO1 (D0) ──[R1 100Ω]──┬── Q1 GATE                                 │
-                           └──[R4 10kΩ]── GND                         │
+                           └──[R4 100kΩ]── GND                        │
                                 Q1 DRAIN ─────────────────────────── J2 pin-3 (LED R-)
                                 Q1 SOURCE ── GND
 
   GPIO2 (D1) ──[R2 100Ω]──┬── Q2 GATE                                 │
-                           └──[R5 10kΩ]── GND                         │
+                           └──[R5 100kΩ]── GND                        │
                                 Q2 DRAIN ─────────────────────────── J2 pin-2 (LED G-)
                                 Q2 SOURCE ── GND
 
-  GPIO3 (D2) ──[R3 100Ω]──┬── Q3 GATE                                 │
-                           └──[R6 10kΩ]── GND                         │
+  GPIO6 (D5) ──[R3 100Ω]──┬── Q3 GATE                                 │
+                           └──[R6 100kΩ]── GND                        │
                                 Q3 DRAIN ─────────────────────────── J2 pin-4 (LED B-)
                                 Q3 SOURCE ── GND
+  (GPIO6 used for Blue — GPIO3 is an ESP32-S3 strapping pin, avoided)
 
   GPIO4 (D3) ──[R7 330Ω]── LED1 (A)──[LED1 K]── GND   (status LED)
 
@@ -78,8 +81,10 @@ MOSFET SWITCH (per channel — same topology for Q1/Q2/Q3)
         (at 3.3V drive: fully enhanced, Rds(on) ≈ 100-150mΩ — adequate for ≤5A)
         TO-220 pin order (flat face, left→right): GATE · DRAIN · SOURCE
 
-  Gate resistor (100Ω): limits inrush, damps ringing on gate.
-  Pull-down (10kΩ):     holds gate LOW when GPIO is hi-Z (boot / reset).
+  Gate resistor (100Ω):  limits inrush, damps ringing on gate.
+  Pull-down (100kΩ):     holds gate LOW when GPIO is hi-Z (boot / reset).
+                         100kΩ chosen over 10kΩ to reduce continuous ~0.1mA draw;
+                         adequate for IRLML6344 gate leakage.
 
 PWM PARAMETERS
 ──────────────
@@ -122,14 +127,22 @@ Only package, footprint, and in some cases the exact part number differ.
  R1-R3  │ 100Ω  1/10W              │ 0603       │ 100Ω  1/4W axial       │ DIN0207
         │ LCSC C22775              │            │ LCSC C57430            │ 10mm pitch
 ────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
- R4-R6  │ 10kΩ  1/10W              │ 0603       │ 10kΩ  1/4W axial       │ DIN0207
-        │ LCSC C25804              │            │ LCSC C57690            │ 10mm pitch
+ R4-R6  │ 100kΩ  1/10W             │ 0603       │ 100kΩ  1/4W axial      │ DIN0207
+        │ LCSC C25803              │            │ LCSC C57692            │ 10mm pitch
 ────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
  R7     │ 330Ω  1/10W              │ 0603       │ 330Ω  1/4W axial       │ DIN0207
         │ LCSC C23138              │            │ LCSC C57502            │ 10mm pitch
 ────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
- C1,C3  │ 100nF ceramic  16-25V    │ 0603       │ 100nF ceramic disc 50V │ 5mm disc
+ C1     │ 100nF ceramic  16-25V    │ 0603       │ 100nF ceramic disc 50V │ 5mm disc
         │ LCSC C14663              │            │ LCSC C49678            │ non-polarised
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ C3     │ 100nF ceramic  25V       │ 0603       │ 100nF ceramic disc 50V │ 5mm disc
+        │ VDD_5V output decoupling │            │ on PS1 VOUT            │ non-polarised
+        │ LCSC C14663              │            │ LCSC C49678            │
+────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
+ C4     │ 100µF Kemet A SMD        │ 3.2x1.6mm  │ 100µF electrolytic 16V │ Radial 6mm
+        │ VCC_12V bulk cap at J2   │ polarised  │ near J2 strip conn.    │ long lead = +
+        │ LCSC C16780              │            │ LCSC C36370            │
 ────────┼──────────────────────────┼────────────┼────────────────────────┼──────────────
  C2     │ 10µF  X5R  10V           │ 0805       │ 10µF electrolytic 25V  │ Radial 5mm
         │ LCSC C15850              │            │ LCSC C36369            │ long lead = +

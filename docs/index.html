@@ -516,7 +516,7 @@ footer .material-icons { font-size: 16px; }
         <h2>Overview</h2>
       </div>
 
-      <p>MorayGlow is an ESP32-S3 firmware that turns a 12V 5050 RGB LED strip into a smart home device. Three IRLML6344TR N-channel MOSFETs are driven by 1 kHz LEDC PWM on GPIO1–3, allowing full 8-bit colour control of each channel. A MP1584 buck converter provides regulated 5V from the same 12V rail that powers the strip, keeping the BOM simple.</p>
+      <p>MorayGlow is an ESP32-S3 firmware that turns a 12V 5050 RGB LED strip into a smart home device. Three IRLML6344TR N-channel MOSFETs are driven by 1 kHz LEDC PWM on GPIO1, GPIO2 and GPIO6, allowing full 8-bit colour control of each channel. A MP1584 buck converter provides regulated 5V from the same 12V rail that powers the strip, keeping the BOM simple.</p>
 
       <p>The device runs an <code>ESPAsyncWebServer</code> serving a LittleFS-hosted single-page UI, a WebSocket endpoint for real-time state push, and a JSON REST API. It simultaneously connects to an MQTT broker and publishes Home Assistant auto-discovery payloads, making it zero-configuration in a standard HA setup. State changes from any source — REST, WebSocket command, or MQTT — funnel through <code>applyLedState()</code> → <code>broadcastState()</code> → <code>mqttPublishState()</code>, keeping all clients in sync.</p>
 
@@ -654,7 +654,7 @@ footer .material-icons { font-size: 16px; }
       <div class="card-row">
         <div class="card">
           <div class="card-label">PWM Drive</div>
-          <div class="card-value">LEDC hardware PWM<br><small>3 channels · 1 kHz · 8-bit resolution (256 levels per colour). Channels 0/1/2 on GPIO1/2/3</small></div>
+          <div class="card-value">LEDC hardware PWM<br><small>3 channels · 1 kHz · 8-bit resolution (256 levels per colour). Channels 0/1/2 on GPIO1/2/6</small></div>
         </div>
         <div class="card">
           <div class="card-label">Status LED</div>
@@ -706,10 +706,12 @@ footer .material-icons { font-size: 16px; }
               <tr><td>Q1–Q3</td><td>3</td><td>IRLML6344TR</td><td>N-Ch SOT-23 MOSFET V<sub>GS(th)</sub>≈1.0V I<sub>d</sub>=5A — R/G/B channels</td><td>Digikey IRLML6344TRPBFCT-ND</td></tr>
               <tr><td>D1</td><td>1</td><td>1N5819HW-7-F</td><td>Schottky 40V 1A SOD-123 — USB/12V back-feed protection</td><td>Digikey 1N5819HW-FDICT-ND</td></tr>
               <tr><td>R1–R3</td><td>3</td><td>100 Ω</td><td>Gate resistors Q1–Q3, 1/10W 0603</td><td>LCSC C22775</td></tr>
-              <tr><td>R4–R6</td><td>3</td><td>10 kΩ</td><td>Gate pull-downs Q1–Q3, 1/10W 0603</td><td>LCSC C25804</td></tr>
+              <tr><td>R4–R6</td><td>3</td><td>100 kΩ</td><td>Gate pull-downs Q1–Q3, 1/10W 0603</td><td>LCSC C25803</td></tr>
               <tr><td>R7</td><td>1</td><td>330 Ω</td><td>Status LED current limiter, 1/10W 0603</td><td>LCSC C23138</td></tr>
-              <tr><td>C1, C3</td><td>2</td><td>100 nF</td><td>VBUS &amp; 12V rail decoupling, ceramic 16V / 25V 0603</td><td>LCSC C14663</td></tr>
+              <tr><td>C1</td><td>1</td><td>100 nF</td><td>VBUS decoupling, ceramic 16V 0603</td><td>LCSC C14663</td></tr>
               <tr><td>C2</td><td>1</td><td>10 µF</td><td>VBUS bulk cap, X5R 10V 0805</td><td>LCSC C15850</td></tr>
+              <tr><td>C3</td><td>1</td><td>100 nF</td><td>VDD_5V output decoupling (on PS1 VOUT), ceramic 25V 0603</td><td>LCSC C14663</td></tr>
+              <tr><td>C4</td><td>1</td><td>100 µF</td><td>VCC_12V bulk cap near J2 — absorbs PWM switching transients, Kemet A SMD</td><td>LCSC C16780</td></tr>
               <tr><td>LED1</td><td>1</td><td>LED Blue 0805</td><td>Status indicator, 0805</td><td>LCSC C72038</td></tr>
               <tr><td>SW1</td><td>1</td><td>Tactile 6mm</td><td>Pushbutton 6mm SMD 4-pin</td><td>LCSC C318884</td></tr>
               <tr><td>PS1</td><td>1</td><td>MP1584 Buck 5V</td><td>Buck module 7–28V in / 5V 3A out, via 2.54mm headers</td><td>Generic module</td></tr>
@@ -739,10 +741,12 @@ footer .material-icons { font-size: 16px; }
               <tr><td>Q1–Q3</td><td>3</td><td>IRL540N</td><td>N-Ch TO-220 logic-level MOSFET V<sub>GS(th)</sub>≤2.0V I<sub>d</sub>=36A — R/G/B channels</td><td>Digikey IRL540NPBF-ND</td><td>3.3V gate drive gives ~100–150 mΩ R<sub>DS(on)</sub>. Pin order: G=1 D=2 S=3 (flat face toward you)</td></tr>
               <tr><td>D1</td><td>1</td><td>1N5819</td><td>Schottky 40V 1A DO-41 axial — USB/12V back-feed protection</td><td>LCSC C727110</td><td>Cathode band toward XIAO VBUS pin</td></tr>
               <tr><td>R1–R3</td><td>3</td><td>100 Ω</td><td>Gate resistors Q1–Q3, 1/4W axial</td><td>LCSC C57430</td><td></td></tr>
-              <tr><td>R4–R6</td><td>3</td><td>10 kΩ</td><td>Gate pull-downs Q1–Q3, 1/4W axial</td><td>LCSC C57690</td><td></td></tr>
+              <tr><td>R4–R6</td><td>3</td><td>100 kΩ</td><td>Gate pull-downs Q1–Q3, 1/4W axial</td><td>LCSC C57692</td><td></td></tr>
               <tr><td>R7</td><td>1</td><td>330 Ω</td><td>Status LED current limiter, 1/4W axial</td><td>LCSC C57502</td><td></td></tr>
-              <tr><td>C1, C3</td><td>2</td><td>100 nF</td><td>VBUS &amp; 12V rail decoupling, ceramic disc 50V 5mm pitch</td><td>LCSC C49678</td><td>Non-polarised</td></tr>
+              <tr><td>C1</td><td>1</td><td>100 nF</td><td>VBUS decoupling, ceramic disc 50V 5mm pitch</td><td>LCSC C49678</td><td>Non-polarised</td></tr>
               <tr><td>C2</td><td>1</td><td>10 µF 25V</td><td>VBUS bulk cap, aluminium electrolytic radial 5mm pitch</td><td>LCSC C36369</td><td>Long lead = positive (VBUS)</td></tr>
+              <tr><td>C3</td><td>1</td><td>100 nF</td><td>VDD_5V output decoupling (on PS1 VOUT), ceramic disc 50V 5mm pitch</td><td>LCSC C49678</td><td>Non-polarised</td></tr>
+              <tr><td>C4</td><td>1</td><td>100 µF 16V</td><td>VCC_12V bulk cap near J2 — absorbs PWM switching transients, radial electrolytic</td><td>LCSC C36370</td><td>Long lead = positive (+12V)</td></tr>
               <tr><td>LED1</td><td>1</td><td>LED Blue 5mm</td><td>Status indicator, 5mm through-hole LED</td><td>LCSC C2296</td><td>Long lead = anode (+); cathode has flat on lens rim</td></tr>
               <tr><td>SW1</td><td>1</td><td>Tactile 6×6mm</td><td>Pushbutton 6×6mm through-hole</td><td>LCSC C318885</td><td>All four legs are equivalent pairs</td></tr>
               <tr><td>PS1</td><td>1</td><td>MP1584 Buck 5V</td><td>Same buck module — via 2×2 2.54mm pin headers</td><td>Generic module</td><td>Solder 4 header pins to module pads first</td></tr>
@@ -764,7 +768,7 @@ footer .material-icons { font-size: 16px; }
         <h2>Wiring</h2>
       </div>
 
-      <p>The schematic shows the XIAO ESP32-S3 GPIO connections. The three PWM outputs (D0–D2) connect to MOSFET gates and are not shown here for clarity — see the KiCad project in <code>docs/KiCad/</code> for the full schematic including the MOSFET drive and 12V strip wiring. The optional status LED circuit on D3 is shown below.</p>
+      <p>The schematic shows the XIAO ESP32-S3 GPIO connections. The three PWM outputs (D0, D1, D5) connect to MOSFET gates and are not shown here for clarity — see the KiCad project in <code>docs/KiCad/</code> for the full schematic including the MOSFET drive and 12V strip wiring. The optional status LED circuit on D3 is shown below.</p>
 
       <div class="schematic-card">
         <svg width="780" height="410" viewBox="0 0 780 410" xmlns="http://www.w3.org/2000/svg"
@@ -821,9 +825,9 @@ footer .material-icons { font-size: 16px; }
           <!-- D1 / GPIO2 — PIN_GREEN PWM -->
           <rect x="264" y="188" width="28" height="14" rx="3" fill="#0d1a0d" stroke="#a5d6a7" stroke-width="1.2"/>
           <text x="278" y="199" text-anchor="middle" fill="#a5d6a7" font-size="9" font-weight="bold">D1</text>
-          <!-- D2 / GPIO3 — PIN_BLUE PWM -->
+          <!-- D5 / GPIO6 — PIN_BLUE PWM (GPIO3 avoided — strapping pin) -->
           <rect x="264" y="208" width="28" height="14" rx="3" fill="#0d1528" stroke="#90caf9" stroke-width="1.2"/>
-          <text x="278" y="219" text-anchor="middle" fill="#90caf9" font-size="9" font-weight="bold">D2</text>
+          <text x="278" y="219" text-anchor="middle" fill="#90caf9" font-size="9" font-weight="bold">D5</text>
           <!-- D3 / GPIO4 — PIN_STATUS LED (amber, optional circuit) -->
           <rect x="264" y="228" width="28" height="14" rx="3" fill="#1a1400" stroke="#ffb74d" stroke-width="1.2"/>
           <text x="278" y="239" text-anchor="middle" fill="#ffb74d" font-size="9" font-weight="bold">D3</text>
@@ -836,7 +840,7 @@ footer .material-icons { font-size: 16px; }
           <text x="305" y="159" fill="#bbb" font-size="9">Ground</text>
           <text x="305" y="179" fill="#ef9a9a" font-size="9">GPIO1 — PWM Red (CH0)</text>
           <text x="305" y="199" fill="#a5d6a7" font-size="9">GPIO2 — PWM Green (CH1)</text>
-          <text x="305" y="219" fill="#90caf9" font-size="9">GPIO3 — PWM Blue (CH2)</text>
+          <text x="305" y="219" fill="#90caf9" font-size="9">GPIO6 — PWM Blue (CH2)</text>
           <text x="305" y="239" fill="#ffb74d" font-size="9">GPIO4 — Status LED signal</text>
           <text x="305" y="259" fill="#ce93d8" font-size="9">GPIO5 — Button (INPUT_PULLUP)</text>
 
@@ -955,7 +959,7 @@ footer .material-icons { font-size: 16px; }
           <tbody>
             <tr><td>GPIO1 / D0</td><td>PIN_RED — PWM Red channel</td><td>Output</td><td>LEDC CH0 · 1 kHz · 8-bit · drives IRLML6344TR gate → R channel of 12V strip</td></tr>
             <tr><td>GPIO2 / D1</td><td>PIN_GREEN — PWM Green channel</td><td>Output</td><td>LEDC CH1 · 1 kHz · 8-bit · drives IRLML6344TR gate → G channel of 12V strip</td></tr>
-            <tr><td>GPIO3 / D2</td><td>PIN_BLUE — PWM Blue channel</td><td>Output</td><td>LEDC CH2 · 1 kHz · 8-bit · drives IRLML6344TR gate → B channel of 12V strip</td></tr>
+            <tr><td>GPIO6 / D5</td><td>PIN_BLUE — PWM Blue channel</td><td>Output</td><td>LEDC CH2 · 1 kHz · 8-bit · drives IRLML6344TR gate → B channel of 12V strip (GPIO3 avoided — ESP32-S3 strapping pin)</td></tr>
             <tr><td>GPIO4 / D3</td><td>PIN_STATUS — Status LED</td><td>Output</td><td>Active-high · 330 Ω series resistor to GND. Solid = connected, blink = busy, fast-blink = reset pending</td></tr>
             <tr><td>GPIO5 / D4</td><td>PIN_BUTTON — User button</td><td>Input</td><td>INPUT_PULLUP · active-low · 50 ms debounce via <code>ButtonStatus</code> · hold 5 s → factory reset</td></tr>
             <tr><td>5V pad</td><td>VCC supply input</td><td>Power in</td><td>Accepts 5V from MP1584 buck output. Do not exceed 5.5V</td></tr>

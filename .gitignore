@@ -11,3 +11,6 @@ MorayClient/test-server/node_modules/
 # OS artifacts
 .DS_Store
 Thumbs.db
+
+# KiCad lock files (temporary, created while files are open)
+docs/KiCad/~*.lck

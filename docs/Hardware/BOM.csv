@@ -14,13 +14,14 @@ D1,1,1N5819HW-7-F,Schottky 40V 1A SOD-123 USB/12V back-feed protection,Diode_SMD
 R1,1,100Ω,Gate resistor Q1 Red 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
 R2,1,100Ω,Gate resistor Q2 Green 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
 R3,1,100Ω,Gate resistor Q3 Blue 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C22775
-R4,1,10kΩ,Gate pull-down Q1 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
-R5,1,10kΩ,Gate pull-down Q2 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
-R6,1,10kΩ,Gate pull-down Q3 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25804
+R4,1,100kΩ,Gate pull-down Q1 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25803
+R5,1,100kΩ,Gate pull-down Q2 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25803
+R6,1,100kΩ,Gate pull-down Q3 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C25803
 R7,1,330Ω,Status LED current limiter 1/10W 0603,Resistor_SMD:R_0603_1608Metric,LCSC C23138
 C1,1,100nF,VBUS decoupling ceramic 16V 0603,Capacitor_SMD:C_0603_1608Metric,LCSC C14663
 C2,1,10µF,VBUS bulk cap X5R 10V 0805,Capacitor_SMD:C_0805_2012Metric,LCSC C15850
-C3,1,100nF,12V rail decoupling ceramic 25V 0603,Capacitor_SMD:C_0603_1608Metric,LCSC C14663
+C3,1,100nF,VDD_5V output decoupling ceramic 25V 0603 (on PS1 VOUT),Capacitor_SMD:C_0603_1608Metric,LCSC C14663
+C4,1,100µF,VCC_12V bulk cap — absorbs PWM switching transients near J2 Kemet A SMD,Capacitor_SMD:CP_EIA-3216-18_Kemet-A,LCSC C16780
 LED1,1,LED Blue,Status indicator 0805,LED_SMD:LED_0805_2012Metric,LCSC C72038
 SW1,1,SW_Push,Tactile pushbutton 6mm SMD 4-pin,Button_Switch_SMD:SW_SPST_PTS645,LCSC C318884
 PS1,1,MP1584 Buck 5V,Buck module 7-28V in / 5V 3A out — connect via 2.54mm headers,Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical,Generic module
@@ -37,13 +38,14 @@ D1,1,1N5819,Schottky 40V 1A DO-41 axial USB/12V back-feed protection,Diode_THT:D
 R1,1,100Ω,Gate resistor Q1 Red 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
 R2,1,100Ω,Gate resistor Q2 Green 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
 R3,1,100Ω,Gate resistor Q3 Blue 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57430,Standard carbon film 1/4W
-R4,1,10kΩ,Gate pull-down Q1 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
-R5,1,10kΩ,Gate pull-down Q2 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
-R6,1,10kΩ,Gate pull-down Q3 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57690,Standard carbon film 1/4W
+R4,1,100kΩ,Gate pull-down Q1 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57692,Standard carbon film 1/4W
+R5,1,100kΩ,Gate pull-down Q2 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57692,Standard carbon film 1/4W
+R6,1,100kΩ,Gate pull-down Q3 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57692,Standard carbon film 1/4W
 R7,1,330Ω,Status LED current limiter 1/4W axial,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,LCSC C57502,Standard carbon film 1/4W
 C1,1,100nF,VBUS decoupling ceramic disc 50V 5mm pitch,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,LCSC C49678,Non-polarised — orientation does not matter
 C2,1,10µF 25V,VBUS bulk cap aluminium electrolytic radial 5mm pitch,Capacitor_THT:CP_Radial_D5.0mm_P2.50mm,LCSC C36369,Polarised — long lead = positive (VBUS)
-C3,1,100nF,12V rail decoupling ceramic disc 50V 5mm pitch,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,LCSC C49678,Non-polarised — orientation does not matter
+C3,1,100nF,VDD_5V output decoupling ceramic disc 50V 5mm pitch (on PS1 VOUT),Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,LCSC C49678,Non-polarised — orientation does not matter
+C4,1,100µF 16V,VCC_12V bulk cap — absorbs PWM switching transients near J2 radial electrolytic,Capacitor_THT:CP_Radial_D6.3mm_P2.50mm,LCSC C36370,Polarised — long lead = positive (+12V)
 LED1,1,LED Blue 5mm,Status indicator 5mm through-hole LED,LED_THT:LED_D5.0mm,LCSC C2296,Long lead = anode (+) — cathode has flat on lens rim
 SW1,1,SW_Push 6mm,Tactile pushbutton 6×6mm through-hole,Button_Switch_THT:SW_Tactile_Straight_KSA0Axx1LFTR,LCSC C318885,All four legs are equivalent pairs — orientation does not matter
 PS1,1,MP1584 Buck 5V,Same buck module — connect via 2×2 2.54mm pin headers soldered in,Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical,Generic module,Solder 4 header pins to module pads first

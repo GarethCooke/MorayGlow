@@ -104,7 +104,7 @@ bool   apMode    = false;      // true = captive portal / WiFi setup mode
 
 GPIO pin assignments on the XIAO ESP32-S3:
 
-- `PIN_RED` (GPIO1), `PIN_GREEN` (GPIO2), `PIN_BLUE` (GPIO3) — PWM output via LEDC channels
+- `PIN_RED` (GPIO1), `PIN_GREEN` (GPIO2), `PIN_BLUE` (GPIO6) — PWM output via LEDC channels (GPIO3 avoided — it is an ESP32-S3 strapping pin)
 - `PIN_STATUS` (GPIO4) — Status LED indicator
 - `PIN_BUTTON` (GPIO5) — Button input with debounce and hold detection
 

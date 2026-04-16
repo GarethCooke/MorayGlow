@@ -5,7 +5,7 @@
 // PIN MAPPING
 //   PIN_RED    GPIO1  D0  LEDC CH0  PWM 1kHz 8-bit
 //   PIN_GREEN  GPIO2  D1  LEDC CH1  PWM 1kHz 8-bit
-//   PIN_BLUE   GPIO3  D2  LEDC CH2  PWM 1kHz 8-bit
+//   PIN_BLUE   GPIO6  D5  LEDC CH2  PWM 1kHz 8-bit  (GPIO3 is a strapping pin — avoid)
 //   PIN_STATUS GPIO4  D3  Output    Status LED (via 330Ω to GND)
 //   PIN_BUTTON GPIO5  D4  Input     INPUT_PULLUP · hold 5s = factory reset
 //
@@ -34,7 +34,7 @@
 
 #define PIN_RED    1
 #define PIN_GREEN  2
-#define PIN_BLUE   3
+#define PIN_BLUE   6
 #define PIN_STATUS 4
 #define PIN_BUTTON 5
 

@@ -1,5 +1,9 @@
 # PlatformIO build artifacts and downloaded libraries
 MorayServer/.pio/
+MorayServer/compile_commands.json
+
+# VS Code C++ IntelliSense (auto-generated, machine-specific)
+.vscode/c_cpp_properties.json
 
 # Node.js dependencies
 MorayClient/node_modules/

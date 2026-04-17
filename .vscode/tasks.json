@@ -2,10 +2,25 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "MorayGlow: Build",
+            "type": "shell",
+            "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3",
+            "options": {
+                "cwd": "${workspaceFolder}/MorayServer",
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
             "label": "MorayGlow: Upload Firmware (USB)",
             "type": "shell",
             "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3 -t upload",
-            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "options": {
+                "cwd": "${workspaceFolder}/MorayServer",
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
             "group": "build",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
@@ -14,7 +29,10 @@
             "label": "MorayGlow: Upload Filesystem (USB)",
             "type": "shell",
             "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3 -t uploadfs",
-            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "options": {
+                "cwd": "${workspaceFolder}/MorayServer",
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
             "group": "build",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
@@ -23,7 +41,10 @@
             "label": "MorayGlow: Upload Firmware (OTA)",
             "type": "shell",
             "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3_ota -t upload",
-            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "options": {
+                "cwd": "${workspaceFolder}/MorayServer",
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
             "group": "build",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
@@ -32,7 +53,10 @@
             "label": "MorayGlow: Upload Filesystem (OTA)",
             "type": "shell",
             "command": "& \"$env:USERPROFILE\\.platformio\\penv\\Scripts\\pio.exe\" run -e xiao_esp32s3_ota -t uploadfs",
-            "options": { "cwd": "${workspaceFolder}/MorayServer" },
+            "options": {
+                "cwd": "${workspaceFolder}/MorayServer",
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
             "group": "build",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []

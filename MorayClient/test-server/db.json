@@ -1,4 +1,5 @@
 {
   "on": true,
-  "color": "#a17272"
+  "color": "#b43131",
+  "cycle": false
 }

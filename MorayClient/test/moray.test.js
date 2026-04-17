@@ -1,6 +1,6 @@
 'use strict';
 
-const Moray = require('../js/moray');
+const Moray = require('../../MorayServer/data/js/moray');
 
 describe('buildWsUrl', () => {
     test('uses wss for https', () => {

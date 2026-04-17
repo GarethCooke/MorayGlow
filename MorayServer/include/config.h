@@ -9,7 +9,9 @@
 // Device identity — AP SSID and MQTT topics are built at runtime from the MAC
 // address (see device.h).  OTA_HOSTNAME uses the unique mDNS hostname.
 #define DEVICE_NAME  "MorayGlow"
-#define OTA_HOSTNAME Device::id().c_str()
+
+// OTA update password
+#define OTA_PASSWORD "password"
 
 // MQTT auto-discovery prefix (Home Assistant default)
 #define MQTT_TOPIC_DISCOVERY_PREFIX "homeassistant"

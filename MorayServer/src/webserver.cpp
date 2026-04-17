@@ -2,32 +2,30 @@
 
 #include <ArduinoJson.h>
 #include <AsyncWebSocket.h>
-#include <EEPROM.h>
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
+#include <Preferences.h>
+#include <ESPmDNS.h>
 #include <WiFi.h>
-#include <WiFiConfig.h>
 #include <map>
 #include <string>
 
 #include "config.h"
-#include "device.h"
+#include "mqtt.h"
 #include "state.h"
 
-// Globals defined in main.cpp
+#include <EspDevice.h>
+#include <EspProvision.h>
+
+// State globals defined in main.cpp
 extern bool   ledOn;
 extern String ledColor;
 extern bool   cycleMode;
-extern bool   apMode;
 extern void   applyLedState();
-extern void   mqttPublishState();
 
-static AsyncWebServer _server(80);
 static AsyncWebSocket _ws("/ws");
 
-// ── Async WiFi scan cache ─────────────────────────────────────────────────────
-// WiFi.scanNetworks(async=true) runs in the background; we poll it in
-// webserverLoop() and cache the count so the request handler never blocks.
+// ── Async WiFi scan (station mode — for in-app network reconfiguration) ───────
 
 static int  _scanCount = WIFI_SCAN_FAILED;
 static bool _scanReady = false;
@@ -39,7 +37,6 @@ static void pollScan() {
         _scanCount = result;
         _scanReady = true;
     } else {
-        // WIFI_SCAN_FAILED or not yet started — kick off a fresh scan
         _scanReady = false;
         WiFi.scanNetworks(/*async=*/true);
     }
@@ -51,8 +48,6 @@ void broadcastState() {
 
 // ── Body handler helpers ──────────────────────────────────────────────────────
 
-// Returns false (and sends a 400) when the body is still streaming or is not
-// valid JSON. Pass doc by reference; it will be populated on success.
 static bool parseJsonBody(uint8_t* data, size_t len, size_t index, size_t total,
                           JsonDocument& doc, AsyncWebServerRequest* req) {
     if (index + len < total) return false;
@@ -63,20 +58,18 @@ static bool parseJsonBody(uint8_t* data, size_t len, size_t index, size_t total,
     return true;
 }
 
-// Broadcast state over WebSocket + MQTT, then reply to the REST caller.
 static void broadcastAndRespond(AsyncWebServerRequest* req) {
     broadcastState();
-    mqttPublishState();
+    Mqtt.publishState();
     req->send(200, "application/json", stateToJson(ledOn, ledColor, cycleMode));
 }
 
-// Apply LED hardware state, then broadcast + respond.
 static void applyAndRespond(AsyncWebServerRequest* req) {
     applyLedState();
     broadcastAndRespond(req);
 }
 
-// ── Body handlers ────────────────────────────────────────────────────────────
+// ── Body handlers ─────────────────────────────────────────────────────────────
 
 static void onBody_power(AsyncWebServerRequest* req, uint8_t* data, size_t len,
                          size_t index, size_t total) {
@@ -100,7 +93,7 @@ static void onBody_color(AsyncWebServerRequest* req, uint8_t* data, size_t len,
         return;
     }
     ledColor  = color;
-    cycleMode = false;  // picking a colour switches to static mode
+    cycleMode = false;
     applyAndRespond(req);
 }
 
@@ -121,54 +114,65 @@ static void onBody_networkset(AsyncWebServerRequest* req, uint8_t* data, size_t 
     JsonDocument doc;
     if (!parseJsonBody(data, len, index, total, doc, req)) return;
     const char* ssid = doc["ssid"] | "";
-    const char* pwd  = doc["password"] | "";
     if (strlen(ssid) == 0) {
         req->send(400, "application/json", "{\"error\":\"ssid required\"}");
         return;
     }
-    WiFiConfig cfg;
-    cfg.setSSID(ssid);
-    cfg.setPassword(pwd);
-    EEPROM.put(0, cfg);
-    EEPROM.commit();
     req->send(200, "application/json", "{\"ok\":true}");
-    delay(500);
-    ESP.restart();
+    Provision.saveCredentialsAndRestart(ssid, doc["password"] | "");
 }
 
-// ── Setup / loop ─────────────────────────────────────────────────────────────
+// ── Setup / loop ──────────────────────────────────────────────────────────────
 
-void webserverSetup() {
-    if (!LittleFS.begin()) {
-        Serial.println("LittleFS mount failed");
-    }
-
+void webserverSetup(AsyncWebServer& server) {
     _ws.onEvent([](AsyncWebSocket*, AsyncWebSocketClient* client, AwsEventType type,
                    void*, uint8_t*, size_t) {
         if (type == WS_EVT_CONNECT) client->text(stateToJson(ledOn, ledColor, cycleMode));
     });
-    _server.addHandler(&_ws);
+    server.addHandler(&_ws);
 
-    // Device info — available in both modes (used by setup.html before STA connection).
-    _server.on("/api/deviceinfo", HTTP_GET, [](AsyncWebServerRequest* req) {
+    server.on("/api/state", HTTP_GET, [](AsyncWebServerRequest* req) {
+        req->send(200, "application/json", stateToJson(ledOn, ledColor, cycleMode));
+    });
+
+    server.on("/api/deviceinfo", HTTP_GET, [](AsyncWebServerRequest* req) {
         JsonDocument doc;
-        doc["id"]  = Device::id();
-        doc["url"] = Device::url();
+        doc["id"]   = EspDevice::id();
+        doc["name"] = EspDevice::name();
+        doc["url"]  = EspDevice::url();
         String out;
         serializeJson(doc, out);
         req->send(200, "application/json", out);
     });
 
-    // Network setup endpoints — available in both modes so WiFi can be
-    // reconfigured from the main UI without requiring a factory reset.
-    _server.on("/api/networkdata", HTTP_GET, [](AsyncWebServerRequest* req) {
+    server.on("/api/devices", HTTP_GET, [](AsyncWebServerRequest* req) {
+        // mDNS query for peer MorayGlow devices — blocks ~2 s
+        JsonDocument doc;
+        JsonArray arr = doc["devices"].to<JsonArray>();
+        JsonObject self = arr.add<JsonObject>();
+        self["id"]  = EspDevice::id();
+        self["ip"]  = WiFi.localIP().toString();
+        self["url"] = EspDevice::url();
+        int found = MDNS.queryService("morayglow", "tcp");
+        for (int i = 0; i < found; i++) {
+            String peerId = MDNS.hostname(i);
+            if (peerId.endsWith(".local")) peerId = peerId.substring(0, peerId.length() - 6);
+            if (peerId == EspDevice::id()) continue;
+            JsonObject peer = arr.add<JsonObject>();
+            peer["id"]  = peerId;
+            peer["ip"]  = MDNS.IP(i).toString();
+            peer["url"] = "http://" + peerId + ".local";
+        }
+        String out;
+        serializeJson(doc, out);
+        req->send(200, "application/json", out);
+    });
+
+    server.on("/api/networkdata", HTTP_GET, [](AsyncWebServerRequest* req) {
         if (!_scanReady) {
-            // Scan still in progress — client should retry shortly
             req->send(200, "application/json", "{\"scanning\":true,\"networks\":[]}");
             return;
         }
-        // Deduplicate by SSID — 2.4 GHz and 5 GHz bands share a name;
-        // keep the entry with the strongest signal.
         struct NetInfo { int rssi; bool secure; };
         std::map<std::string, NetInfo> best;
         for (int i = 0; i < _scanCount; i++) {
@@ -179,7 +183,6 @@ void webserverSetup() {
             if (it == best.end() || rssi > it->second.rssi)
                 best[ssid] = {rssi, secure};
         }
-
         JsonDocument doc;
         doc["scanning"] = false;
         JsonArray arr   = doc["networks"].to<JsonArray>();
@@ -192,50 +195,25 @@ void webserverSetup() {
         String out;
         serializeJson(doc, out);
         req->send(200, "application/json", out);
-        // Free scan memory and start a fresh background scan for next request
         _scanReady = false;
         WiFi.scanDelete();
         WiFi.scanNetworks(/*async=*/true);
     });
 
-    _server.on("/api/networkset", HTTP_POST,
-               [](AsyncWebServerRequest* req) {}, nullptr, onBody_networkset);
+    server.on("/api/networkset", HTTP_POST,
+              [](AsyncWebServerRequest* req) {}, nullptr, onBody_networkset);
 
-    if (apMode) {
-        // In AP mode redirect everything to the setup page
-        _server.serveStatic("/", LittleFS, "/").setDefaultFile("setup.html");
-        _server.onNotFound([](AsyncWebServerRequest* req) {
-            if (req->url() == "/setup.html")
-                req->send(503, "text/plain", "LittleFS not mounted — run uploadfs");
-            else
-                req->redirect("/setup.html");
-        });
-    } else {
-        _server.on("/api/state", HTTP_GET, [](AsyncWebServerRequest* req) {
-            req->send(200, "application/json", stateToJson(ledOn, ledColor, cycleMode));
-        });
+    server.on("/api/power", HTTP_POST,
+              [](AsyncWebServerRequest* req) {}, nullptr, onBody_power);
 
-        // Device discovery — queries mDNS for all morayglow devices (~2 s).
-        _server.on("/api/devices", HTTP_GET, [](AsyncWebServerRequest* req) {
-            req->send(200, "application/json", Device::queryDevicesJson());
-        });
+    server.on("/api/color", HTTP_POST,
+              [](AsyncWebServerRequest* req) {}, nullptr, onBody_color);
 
-        _server.on("/api/power", HTTP_POST,
-                   [](AsyncWebServerRequest* req) {}, nullptr, onBody_power);
+    server.on("/api/mode", HTTP_POST,
+              [](AsyncWebServerRequest* req) {}, nullptr, onBody_mode);
 
-        _server.on("/api/color", HTTP_POST,
-                   [](AsyncWebServerRequest* req) {}, nullptr, onBody_color);
+    server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
-        _server.on("/api/mode", HTTP_POST,
-                   [](AsyncWebServerRequest* req) {}, nullptr, onBody_mode);
-
-        _server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
-    }
-
-    _server.begin();
-    Serial.println("HTTP server started");
-
-    // Start the first background scan immediately
     WiFi.scanNetworks(/*async=*/true);
 }
 

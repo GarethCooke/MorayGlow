@@ -9,7 +9,7 @@ const logic               = require('./logic');
 
 const PORT        = 3000;
 const DB_PATH     = path.join(__dirname, 'db.json');
-const CLIENT_ROOT = path.join(__dirname, '..');
+const CLIENT_ROOT = path.join(__dirname, '../../MorayServer/data');
 
 const app = express();
 app.use(express.json());
@@ -58,7 +58,38 @@ app.post('/api/color', (req, res) => {
     res.json(state);
 });
 
-// Serve MorayClient static files
+app.post('/api/mode', (req, res) => {
+    if (typeof req.body.cycle !== 'boolean') return res.status(400).json({ error: 'cycle required' });
+    state = { ...state, cycle: req.body.cycle };
+    saveState(state);
+    broadcast();
+    res.json(state);
+});
+
+app.get('/api/deviceinfo', (_req, res) => res.json({
+    id: 'morayglow-mock',
+    name: 'MorayGlow',
+    url: 'http://morayglow-mock.local',
+}));
+
+app.get('/api/networkdata', (_req, res) => res.json({
+    scanning: false,
+    networks: [
+        { ssid: 'MockNetwork',    rssi: -55, secure: true  },
+        { ssid: 'AnotherNetwork', rssi: -72, secure: false },
+    ],
+}));
+
+app.post('/api/networkset', (req, res) => {
+    if (!req.body.ssid) return res.status(400).json({ error: 'ssid required' });
+    res.json({ ok: true });
+});
+
+app.get('/api/devices', (_req, res) => res.json({
+    devices: [{ id: 'morayglow-mock', ip: '127.0.0.1', url: 'http://localhost:3000' }],
+}));
+
+// Serve firmware data/ static files
 app.use(express.static(CLIENT_ROOT));
 
 // ---- HTTP + WebSocket server ----

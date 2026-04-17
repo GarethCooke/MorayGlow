@@ -102,9 +102,11 @@ void setup() {
     });
 
     EspProvisionConfig cfg;
-    cfg.apPassword   = "morayglow";   // min 8 chars for WPA2
-    cfg.nvsNamespace = "morayglow";
-    cfg.otaPassword  = OTA_PASSWORD;
+    cfg.apPassword       = "morayglow";
+    cfg.nvsNamespace     = "morayglow";
+    cfg.otaPassword      = OTA_PASSWORD;
+    cfg.friendlyHostname = "morayglow";
+    cfg.serviceType      = "morayglow";
     Provision.begin("morayglow", "MorayGlow", cfg);
 
     blinkStatus(2, 200, 200);

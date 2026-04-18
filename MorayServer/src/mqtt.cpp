@@ -13,7 +13,7 @@ extern void   applyLedState();
 
 MqttLight Mqtt;
 
-void MqttLight::setup(const char* deviceId) {
+void MqttLight::setup(const char* deviceId, const char* mqttUser, const char* mqttPass) {
     _topicState     = String(deviceId) + "/state";
     _topicCommand   = String(deviceId) + "/command";
     _topicDiscovery = String(MQTT_TOPIC_DISCOVERY_PREFIX) + "/light/" + deviceId + "/config";
@@ -21,8 +21,8 @@ void MqttLight::setup(const char* deviceId) {
     EspMqttBase::Config cfg;
     cfg.host     = MQTT_HOST;
     cfg.port     = MQTT_PORT;
-    cfg.user     = MQTT_USER;
-    cfg.password = MQTT_PASSWORD;
+    cfg.user     = mqttUser;
+    cfg.password = mqttPass;
     EspMqttBase::setup(cfg);
 }
 

@@ -98,7 +98,9 @@ void setup() {
 
     Provision.onStation([](AsyncWebServer& srv) {
         webserverSetup(srv);
-        Mqtt.setup(EspDevice::id().c_str());
+        String mqttUser = Provision.getMqttUser();
+        String mqttPass = Provision.getMqttPass();
+        Mqtt.setup(EspDevice::id().c_str(), mqttUser.c_str(), mqttPass.c_str());
     });
 
     EspProvisionConfig cfg;

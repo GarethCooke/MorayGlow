@@ -3,7 +3,7 @@
 
 class MqttLight : public EspMqttBase {
 public:
-    void setup(const char* deviceId);
+    void setup(const char* deviceId, const char* mqttUser = "", const char* mqttPass = "");
     void publishState();
 
 protected:

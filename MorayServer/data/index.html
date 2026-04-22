@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MorayGlow</title>
     <link rel="stylesheet" href="css/style.css">
+    <script>if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light');</script>
 </head>
 <body>
+    <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+
     <div class="container">
         <h1>MorayGlow</h1>
 
         <div class="card">
-            <button id="power-btn" class="power-btn" aria-label="Toggle power">&#9711;</button>
+            <button id="power-btn" class="power-btn" type="button" aria-label="Toggle power">&#9711;</button>
             <p id="power-label" class="power-label">OFF</p>
         </div>
 
@@ -43,6 +48,17 @@
         <a href="devices.html" class="nav-link">Other devices &rsaquo;</a>
         <a href="setup.html" class="nav-link">WiFi settings &rsaquo;</a>
     </div>
+
+    <script>
+    var SUN = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+    var MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    function toggleTheme() {
+      var light = document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', light ? 'light' : 'dark');
+      document.getElementById('theme-icon').innerHTML = light ? MOON : SUN;
+    }
+    document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('light') ? MOON : SUN;
+    </script>
     <script src="js/moray.js"></script>
     <script src="js/app.js"></script>
 </body>

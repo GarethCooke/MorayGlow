@@ -4,53 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Device Setup</title>
+<link rel="stylesheet" href="css/style.css">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: sans-serif; background: #111; color: #eee; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; min-height: 100vh; }
+  body { justify-content: flex-start; }
   h1 { font-size: 1.4rem; margin-bottom: 0.25rem; letter-spacing: 0.05em; }
-  .sub { font-size: 0.8rem; color: #888; margin-bottom: 2rem; }
-  .card { background: #1e1e1e; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 360px; margin-bottom: 1rem; }
-  button:disabled { background: #333; color: #555; cursor: not-allowed; }
-  #msg { font-size: 0.85rem; color: #888; min-height: 1.2em; text-align: center; }
-
-  .card-title { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+  .sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; }
+  .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 360px; margin-bottom: 1rem; }
+  .card-title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
   .net-list { display: flex; flex-direction: column; gap: 0.4rem; min-height: 2rem; }
   .net-item {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0.6rem 0.75rem; background: #2a2a2a; border-radius: 8px;
+    padding: 0.6rem 0.75rem; background: var(--surface); border-radius: 8px;
     cursor: pointer; border: 1px solid transparent; transition: border-color 0.15s;
   }
-  .net-item:hover { border-color: #444; }
-  .net-item.selected { border-color: #2979ff; }
+  .net-item:hover { border-color: var(--border); }
+  .net-item.selected { border-color: var(--accent); }
   .net-name { font-size: 0.9rem; font-weight: 600; }
-  .net-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #888; }
-  .scanning { font-size: 0.85rem; color: #888; padding: 0.4rem 0; }
-
-  label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 0.3rem; margin-top: 1rem; }
+  .net-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--muted); }
+  .scanning { font-size: 0.85rem; color: var(--muted); padding: 0.4rem 0; }
+  label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem; margin-top: 1rem; }
   label:first-of-type { margin-top: 0; }
   input {
-    width: 100%; padding: 0.75rem 1rem; background: #2a2a2a; border: 1px solid #333;
-    border-radius: 8px; color: #eee; font-size: 1rem; outline: none;
+    width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 1rem; outline: none; transition: border-color 0.15s;
   }
-  input:focus { border-color: #2979ff; }
-
+  input:focus { border-color: var(--accent); }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset;
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--text);
+  }
   .btn-row { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
   button {
-    flex: 1; padding: 0.9rem; background: #2979ff; color: #fff; border: none;
-    border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer;
+    flex: 1; padding: 0.9rem; background: var(--accent); color: #fff; border: none;
+    border-radius: var(--radius); font-size: 1rem; font-weight: 700; cursor: pointer;
     letter-spacing: 0.05em; transition: background 0.15s;
   }
-  button.secondary { background: #2a2a2a; color: #aaa; flex: 0 0 auto; padding: 0.9rem 1rem; }
+  button:not(:disabled):hover { background: var(--accent-h); }
+  button:disabled { background: var(--surface); color: var(--muted); cursor: not-allowed; }
+  button.secondary { background: var(--surface); color: var(--muted); flex: 0 0 auto; padding: 0.9rem 1rem; }
+  button.secondary:not(:disabled):hover { background: var(--surface-h); color: var(--text); }
   button.rescan { flex: none; padding: 0.1rem 0.5rem; font-size: 0.75rem; border-radius: 6px; }
-  button:not(:disabled):not(.secondary):hover { background: #1565c0; }
-  button.secondary:not(:disabled):hover { background: #333; color: #eee; }
-
-  .url-card { background: #1e1e1e; border-radius: 12px; padding: 1rem 1.5rem; width: 100%; max-width: 360px; margin-bottom: 1rem; }
-  .url-label { font-size: 0.75rem; color: #888; margin-bottom: 0.25rem; }
-  .url-link { font-size: 0.9rem; color: #2979ff; word-break: break-all; }
+  .url-card { background: var(--card-bg); border-radius: var(--radius); padding: 1rem 1.5rem; width: 100%; max-width: 360px; margin-bottom: 1rem; }
+  .url-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
+  .url-link { font-size: 0.9rem; color: var(--accent); word-break: break-all; }
+  #msg { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; text-align: center; }
+  .back-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; margin-top: 1rem; display: inline-block; }
+  .back-link:hover { text-decoration: underline; }
 </style>
+<script>if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light');</script>
 </head>
 <body>
+<button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+</button>
+
+<div style="display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;width:100%;">
 <h1 id="title">Setting up&hellip;</h1>
 <p class="sub">WiFi Setup</p>
 
@@ -74,8 +85,19 @@
   </div>
 </div>
 <div id="msg"></div>
+<a href="/" class="back-link">&#8592; Back to controls</a>
+</div>
 
 <script>
+var SUN = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+var MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+function toggleTheme() {
+  var light = document.documentElement.classList.toggle('light');
+  localStorage.setItem('theme', light ? 'light' : 'dark');
+  document.getElementById('theme-icon').innerHTML = light ? MOON : SUN;
+}
+document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('light') ? MOON : SUN;
+
 var selectedSsid = null;
 
 function escHtml(s) {
@@ -85,7 +107,7 @@ function escHtml(s) {
 fetch('/api/deviceinfo').then(function(r) { return r.json(); }).then(function(info) {
   var n = info.name || 'Device';
   document.getElementById('title').textContent = n;
-  document.title = n + ' \u2014 WiFi Setup';
+  document.title = n + ' — WiFi Setup';
   var link = document.getElementById('url-link');
   link.href = info.url;
   link.textContent = info.url;
@@ -99,10 +121,10 @@ document.getElementById('ssid').addEventListener('input', function() {
 });
 
 function signalLabel(rssi) {
-  if (rssi >= -60) return '\u2582\u2584\u2586\u2588';
-  if (rssi >= -70) return '\u2582\u2584\u2586\u00b7';
-  if (rssi >= -80) return '\u2582\u2584\u00b7\u00b7';
-  return '\u2582\u00b7\u00b7\u00b7';
+  if (rssi >= -60) return '▂▄▆█';
+  if (rssi >= -70) return '▂▄▆·';
+  if (rssi >= -80) return '▂▄··';
+  return '▂···';
 }
 
 function networkItemHtml(n) {
@@ -110,7 +132,7 @@ function networkItemHtml(n) {
     '<span class="net-name">' + escHtml(n.ssid) + '</span>' +
     '<span class="net-meta">' +
       '<span style="font-family:monospace">' + signalLabel(n.rssi) + '</span>' +
-      (n.secure ? '<span>\uD83D\uDD12</span>' : '') +
+      (n.secure ? '<span>🔒</span>' : '') +
     '</span>' +
   '</div>';
 }
@@ -170,19 +192,19 @@ function save() {
   var btn = document.getElementById('btn');
   var msg = document.getElementById('msg');
   btn.disabled = true;
-  msg.style.color = '#888';
-  msg.textContent = 'Saving\u2026';
+  msg.style.color = 'var(--muted)';
+  msg.textContent = 'Saving…';
   fetch('/api/networkset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ssid: ssid, password: document.getElementById('pass').value })
   }).then(function(r) {
     if (r.ok) {
-      msg.style.color = '#4caf50';
-      msg.textContent = 'Saved \u2014 device is restarting. Reconnect to your network.';
+      msg.style.color = 'var(--ok)';
+      msg.textContent = 'Saved — device is restarting. Reconnect to your network.';
     } else { throw new Error('HTTP ' + r.status); }
   }).catch(function(e) {
-    msg.style.color = '#f44336';
+    msg.style.color = 'var(--err)';
     msg.textContent = 'Error: ' + e.message;
     btn.disabled = false;
   });
